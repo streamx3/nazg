@@ -1,5 +1,5 @@
-#ifndef NZ_INT
-#define NZ_INT
+#ifndef NZ_INT_H
+#define NZ_INT_H
 
 #include <stdint.h>
 
@@ -8,4 +8,4 @@
 #define s16 int16_t
 #define u16 uint16_t
 
-#endif // NZ_INT
+#endif // NZ_INT_H
