@@ -76,4 +76,11 @@ s32 nz_list_push_front( nz_list *list, void *data );
 */
 s32 nz_list_remove_by_iter( nz_list *list, nz_node *node );
 
+/*!	\fn s32 nz_list_set_node_destructor( nz_list *list, nz_destructor_t destructor_fn );
+	\brief sets node destructor to list
+	\param list pointer to list to be configured
+	\param destructor_fn data deallocation function
+*/
+s32 nz_list_set_node_destructor( nz_list *list, nz_destructor_t destructor_fn );
+
 #endif // NZ_LIST_H
