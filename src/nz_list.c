@@ -2,28 +2,79 @@
 
 /******************************************************************************/
 
+#define __NZ_CHKNULLPTR_JMP(ptr,retv,jmp) \
+	do{ \
+		if( ptr == NULL ){ \
+			retv == NZ_ENULLPTR; \
+			goto jmp; \
+		} \
+	}while(0);
+
+/******************************************************************************/
+
+/* Will jump if condition is true */
+#define __NZ_CHKCOND_JMP(cond,retv,jmp) \
+	do{ \
+		if( cond ){ \
+			retv == NZ_ENULLPTR; \
+			goto jmp; \
+		} \
+	}while(0);
+
+/******************************************************************************/
+
+#define __NZ_CALL_NODE_DESTRUCTOR(list,node) \
+	do{ \
+		if(list && node && list->fn_node_destr != NULL && node->data != NULL){ \
+			list->fn_node_destr(node->data) \
+			node->data = NULL; \
+		} \
+	}while(0);
+
+/******************************************************************************/
+
+inline void __nz_node_push_to_empty_list( nz_list *list, nz_node *node ){
+	node->next = list->end;
+	node->prev = list->rend;
+
+	list->rend->next = node;
+	list->end->prev = node;
+
+	list->begin = node;
+	list->rbegin = node;
+}
+
+/******************************************************************************/
+
+
+/*
+	STATE BEFORE
+	a <--> c
+
+	STATE AFTER
+	a <--> b <--> c
+*/
+inline void __nz_node_bind_new_neigh( nz_node *a, nz_node *b, nz_node *c){
+	a->next = b;
+	b->prev = a;
+
+	c->prev = b;
+	b->next = c;
+}
+
+/******************************************************************************/
+
 s32 nz_list_init( nz_list *list ){
 	nz_node *sentinel_first, *sentinel_last;
 	s32 retval;
 
 	retval = NZ_ESUCCESS;
 
-	if( list == NULL ){
-		retval = NZ_ENULLPTR;
-		goto nz_list_init_out;
-	}
-
+	__NZ_CHKNULLPTR_JMP( list, retval, nz_list_init_out );
 	sentinel_first = nz_malloc( sizeof(nz_node) );
-	if( sentinel_first == NULL ){
-		retval = NZ_ENOMEM;
-		goto nz_list_init_out;
-	}
+	__NZ_CHKNULLPTR_JMP( sentinel_first, retval, nz_list_init_out );
 	sentinel_last = nz_malloc( sizeof(nz_node) );
-	if( sentinel_last == NULL ){
-		odbus_free( sentinel_first );
-		retval = NZ_ENOMEM;
-		goto nz_list_init_out;
-	}
+	__NZ_CHKNULLPTR_JMP( sentinel_last, retval, nz_list_init_free_sentfrst );
 
 	list->node_destructor = NULL;
 	list->size = 0;
@@ -42,6 +93,10 @@ s32 nz_list_init( nz_list *list ){
 
 nz_list_init_out:;
 	return retval;
+
+nz_list_init_free_sentfrst:;
+	nz_free(sentinel_first);
+	goto nz_list_init_out;
 }
 
 /******************************************************************************/
@@ -50,10 +105,8 @@ s32 nz_list_exit( nz_list *list ){
 	s32 retval;
 
 	retval = NZ_ESUCCESS;
-	if( list == NULL ){
-		retval = NZ_ENULLPTR;
-		goto nz_list_exit_out;
-	}
+	__NZ_CHKNULLPTR_JMP( ist, retval, nz_list_exit_out );
+
 	for( ; list->begin != NULL && list->begin != list->end;
 		 nz_list_pop_front( list ) );
 
@@ -78,10 +131,8 @@ s32 nz_list_pop_back( nz_list *list ){
 	s32 retval;
 	retval = NZ_ESUCCESS;
 
-	if( list == NULL || list->end ){
-		retval = NZ_ENULLPTR;
-		goto nz_list_pop_back_out;
-	}
+	__NZ_CHKCOND_JMP( list == NULL || list->end == NULL, \
+					  retval, nz_list_pop_back_out );
 
 	if( list->begin != list->end && list->size ){
 		/* Get target */
@@ -94,10 +145,7 @@ s32 nz_list_pop_back( nz_list *list ){
 		if( node == list->rend ){
 			list->rend = list->rbegin;
 		}
-		if(list->fn_node_destr != NULL && node->data != NULL ){
-			list->fn_node_destr( node->data );
-			node->data = NULL;
-		}
+		__NZ_CALL_NODE_DESTRUCTOR(list, node);
 		nz_free( node );
 		--(list->size);
 	}
@@ -109,19 +157,93 @@ nz_list_pop_back_out:;
 /******************************************************************************/
 
 s32 nz_list_pop_front( nz_list *list ){
+	nz_node *node;
+	s32 retval;
+	retval = NZ_ESUCCESS;
 
+	__NZ_CHKCOND_JMP( list == NULL || list->begin == NULL, \
+					  retval, nz_list_pop_front_out );
+
+	if( list->begin != list->end && list->size > 0 ){
+		/* Get target */
+		node = list->begin;
+		/* Rebuild tail */
+		list->begin = list->begin->next;
+		list->begin->prev = list->rend;
+		list->rend->next = list->begin;
+
+		if( node == list->rend ){
+			list->rbegin = list->rend;
+		}
+		__NZ_CALL_NODE_DESTRUCTOR(list, node);
+		nz_free( node );
+		--(list->size);
+	}
+
+nz_list_pop_front_out:;
+	return retval;
 }
 
 /******************************************************************************/
 
 s32 nz_list_push_back( nz_list *list, void *data ){
+	nz_node *node;
+	s32 retval, errh;
 
+	retval = NZ_ESUCCESS;
+	__NZ_CHKNULLPTR_JMP( list, retval, nz_list_push_back_out );
+	node = nz_malloc( sizeof(nz_node) );
+	__NZ_CHKNULLPTR_JMP( node, retval, nz_list_push_back_out );
+	node->data = data;
+
+	errh = nz_list_empty( list );
+	if( errh < 0 ){
+		retval = ((-1)*errh);
+		goto nz_list_push_back_out;
+	}
+	/* Since here list is valid and empty or ont empty */
+	if( errh ){
+		/* List is empty */
+		__nz_node_push_to_empty_list( list, node );
+	}else{
+		/* List is not empty */
+		__nz_node_bind_new_neigh( list->rbegin, node,list->end );
+		list->rbegin = node;
+	}
+
+nz_list_push_back_out:;
+	return retval;
 }
 
 /******************************************************************************/
 
 s32 nz_list_push_front( nz_list *list, void *data ){
+	nz_node *node;
+	s32 retval, errh;
 
+	retval = NZ_ESUCCESS;
+	__NZ_CHKNULLPTR_JMP( list, retval, nz_list_push_back_out );
+	node = nz_malloc( sizeof(nz_node) );
+	__NZ_CHKNULLPTR_JMP( node, retval, nz_list_push_back_out );
+	node->data = data;
+
+	errh = nz_list_empty( list );
+	if( errh < 0 ){
+		retval = ((-1)*errh);
+		goto nz_list_push_back_out;
+	}
+	/* Since here list is valid and empty or ont empty */
+	if( errh ){
+		/* List is empty */
+		__nz_node_push_to_empty_list( list, node );
+	}else{
+		/* List is not empty */
+		__nz_node_bind_new_neigh( list->rend, node, list->begin );
+		list->begin = node;
+	}
+
+nz_list_push_back_out:;
+	return retval;
 }
 
 /******************************************************************************/
@@ -133,15 +255,29 @@ s32 nz_list_remove_by_iter( nz_list *list, nz_node *node ){
 /******************************************************************************/
 
 s32 nz_list_set_node_destructor( nz_list *list, nz_destructor_t destructor_fn ){
-	int retval;
+	s32 retval;
 	errh = NZ_ESUCCESS;
 
-	if( list == NULL || destruction == NULL ){
-		retval = NZ_ENULLPTR;
-		goto nz_list_set_node_destructor_out;
-	}
+	__NZ_CHKCOND_JMP( list == NULL || destruction == NULL, retval, \
+					  nz_list_set_node_destructor_out );
+
 	list->fn_node_destr = destructor_fn;
 
 nz_list_set_node_destructor_out:;
 	return retval;
+}
+
+s32 nz_list_empty( nz_list *list ){
+	if( list == NULL ){
+		return -NZ_ENULLPTR;
+	}
+	if( list->size == 0 ){
+		if(	list->begin == list->end && list->rend == list->rbegin &&
+			list->begin->prev == list->rbegin &&list->rend->next == list->end){
+			return 1; // TRUE AND VALID
+		}else{
+			return -NZ_EINVALID;
+		}
+	}
+	return 0; // FALSE
 }
