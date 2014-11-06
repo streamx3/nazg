@@ -76,7 +76,7 @@ s32 __nz_list_splice_internal( nz_list *dst, nz_list *src, nz_node *pd1,
 #define __NZ_LSI_PTRCHK(l,p1,p2) \
 	do{ \
 		if( p1 == p2 && ( p1 == l->end || p1 == l->rend ) ){ \
-			retval = NZ_NOTFOUND; \
+			retval = NZ_ENOTFOUND; \
 			goto __nz_list_splice_internal_out; \
 		} \
 	}while(0);
@@ -347,26 +347,34 @@ nz_list_push_back_out:;
 
 /******************************************************************************/
 
-s32 nz_list_remove_by_iter( nz_list *list, nz_node *node ){
+s32 nz_list_remove_by_iter( nz_list *list, nz_node *aim ){
 	s32 retval;
 	nz_node *node;
 
-	retval = NZ_ESUCCESS;
+	retval = NZ_ENOTFOUND;
 
-	__NZ_CHKCOND_JMP( list == NULL || node == NULL || list->begin == NULL, \
+	__NZ_CHKCOND_JMP( list == NULL || aim == NULL || list->begin == NULL, \
 					  retval, nz_list_remove_by_iter_out );
-	if( node == list->end ){
+	if( aim == list->end ){
 		retval = NZ_EUNKNOWN;
 		goto nz_list_remove_by_iter_out;
 	}
 
-	if( node == list->begin ){
-		nz_list_pop_front( list );
-		retval = NZ_ESUCCESS;
-		goto nz_list_remove_by_iter_out;
-	}
-	/* TODO CONTINUE HERE! */
+	if( aim == list->begin )
+		return nz_list_pop_front( list );
+	
+	if( aim == list->rbegin )
+		return nz_list_pop_back( list );
 
+	for( node = list->begin; node->next != aim && node != list->end && node != NULL;
+		node = node->next );
+	if( node == aim ){
+		node->next = node->next->nextt;
+		node->next->prev = node;
+		__NZ_CALL_NODE_DESTRUCTOR( aim );
+		--(list->size);
+		retval = NZ_ESUCCESS;
+	}
 
 nz_list_remove_by_iter_out:;
 	return retval;
