@@ -89,4 +89,39 @@ s32 nz_list_set_node_destructor( nz_list *list, nz_destructor_t destructor_fn );
 */
 s32 nz_list_empty( nz_list *list );
 
+/*!	\fn s32 nz_list_clear( nz_list *list )
+	\brief cleares list; calls node destructor if set;
+	\param list pointer to list to be cleared
+	\return NZ_ESUCCESS on sucess or NZ_ENULLPTR if list == NULL
+*/
+s32 nz_list_clear( nz_list *list );
+
+/*!	\fn 
+	\brief
+	\param
+	\param
+	\param
+	\return
+*/
+s32 nz_list_splice( nz_list *target_list, nz_lnode *position, nz_list *new_list );
+
+/*!	\fn 
+	\brief
+	\param
+	\param
+	\param
+	\return
+*/
+s32 nz_list_splice_pos( nz_list *target_list, nz_lnode *position, nz_list *new_list, nz_lnode *i );
+
+/*!	\fn 
+	\brief
+	\param
+	\param
+	\param
+	\return
+*/
+s32 nz_list_splice_range( nz_list *target_list, nz_lnode *position, nz_list *new_list, nz_lnode *first, nz_lnode *last );
+
+
 #endif // NZ_LIST_H

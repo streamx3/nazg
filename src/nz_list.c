@@ -33,6 +33,106 @@
 
 /******************************************************************************/
 
+s32 __nz_list_size_reset( nz_list *list ){
+	s32 retval;
+	u32 real_size;
+	nz_node *node;
+
+	retval = NZ_ENULLPTR;
+	real_size = 0;
+	if( list != NULL && list->begin != NULL && list->end != NULL ){
+		for( node = list->begin; node != NULL && node != list->end;
+			 node = node->next, ++real_size );
+		list->size = real_size;
+		retval = NZ_ESUCCESS;
+	}
+
+	return retval;
+}
+
+/******************************************************************************/
+/*
+ [ dst ]->[sent]<->[n1]<->[n2]<->[pd0]<->[pd1]<->...<->[sent]
+            +                      ?       v             +
+
+ [ src ]->[sent]<->[n1]<->[ps0]<->[ps1]<->...<->[ps2]<->[ps3]<->...<->[sent]
+            +               ?       v             v       ?             +
+
+LEGEND
+ +  known by list
+ ?  not given, not known
+ v  given in input
+
+DESCRIPTION
+	This function is just like std::list.splice();
+	You know, like move move chain [ps1]-...-[ps2] between [pd1->prev] and [pd1].
+	It becomes [pd1->prev]-[ps1]-...-[ps2]-[pd1].
+*/
+
+s32 __nz_list_splice_internal( nz_list *dst, nz_list *src, nz_node *pd1,
+								  nz_node *ps1, nz_node *ps2 ){
+
+/**** Check if incoming source list pointers are usable. ****/
+#define __NZ_LSI_PTRCHK(l,p1,p2) \
+	do{ \
+		if( p1 == p2 && ( p1 == l->end || p1 == l->rend ) ){ \
+			retval = NZ_NOTFOUND; \
+			goto __nz_list_splice_internal_out; \
+		} \
+	}while(0);
+/************************************************************/
+
+	nz_node *pd0, *ps0, *ps3;
+	s32 retval;
+
+	retval = NZ_ESUCCESS;
+
+	__NZ_LSI_PTRCHK( src, ps1, ps2 );
+
+	/* fixing wrong incomming ps1 */
+	if( ps1 == dst->rend )
+		ps1 = ps1->next;
+
+	pd0 = pd1->prev;
+	ps0 = ps1->prev;
+	ps0->next = ps1;
+
+	if( ps2 == src->end )
+		ps2 = ps2->prev;
+
+	ps3 = ps2->next;
+
+	if( ps1 == src->begin ){
+		src->begin = ps3;
+		src->rend->next = src->begin;
+		src->begin->prev = src->rend;
+	}
+
+	/* This is main splicing action */
+	pd0->next = ps1;
+	ps1->prev = pd0;
+	pd1->prev = ps2;
+	ps2->next = pd1;
+	ps0->next = ps3;
+	ps3->prev = ps0;
+
+	dst->begin = dst->rend->next;
+	dst->begin->prev = dst->rend;
+
+	if( dst->end->prev != dst->rbegin ){
+		dst->rbegin = dst->end->prev;
+		dst->rbegin->next = dst->end;
+	}
+
+	__nz_list_size_reset( dst ); /* TODO Should log here? */
+	__nz_list_size_reset( src ); /* TODO And here? */
+
+__nz_list_splice_internal_out:;
+	return retval;
+}
+
+/******************************************************************************/
+
 inline void __nz_node_push_to_empty_list( nz_list *list, nz_node *node ){
 	node->next = list->end;
 	node->prev = list->rend;
@@ -45,7 +145,6 @@ inline void __nz_node_push_to_empty_list( nz_list *list, nz_node *node ){
 }
 
 /******************************************************************************/
-
 
 /*
 	STATE BEFORE
@@ -249,14 +348,35 @@ nz_list_push_back_out:;
 /******************************************************************************/
 
 s32 nz_list_remove_by_iter( nz_list *list, nz_node *node ){
+	s32 retval;
+	nz_node *node;
 
+	retval = NZ_ESUCCESS;
+
+	__NZ_CHKCOND_JMP( list == NULL || node == NULL || list->begin == NULL, \
+					  retval, nz_list_remove_by_iter_out );
+	if( node == list->end ){
+		retval = NZ_EUNKNOWN;
+		goto nz_list_remove_by_iter_out;
+	}
+
+	if( node == list->begin ){
+		nz_list_pop_front( list );
+		retval = NZ_ESUCCESS;
+		goto nz_list_remove_by_iter_out;
+	}
+	/* TODO CONTINUE HERE! */
+
+
+nz_list_remove_by_iter_out:;
+	return retval;
 }
 
 /******************************************************************************/
 
 s32 nz_list_set_node_destructor( nz_list *list, nz_destructor_t destructor_fn ){
 	s32 retval;
-	errh = NZ_ESUCCESS;
+	retval = NZ_ESUCCESS;
 
 	__NZ_CHKCOND_JMP( list == NULL || destruction == NULL, retval, \
 					  nz_list_set_node_destructor_out );
@@ -266,6 +386,8 @@ s32 nz_list_set_node_destructor( nz_list *list, nz_destructor_t destructor_fn ){
 nz_list_set_node_destructor_out:;
 	return retval;
 }
+
+/******************************************************************************/
 
 s32 nz_list_empty( nz_list *list ){
 	if( list == NULL ){
@@ -280,4 +402,37 @@ s32 nz_list_empty( nz_list *list ){
 		}
 	}
 	return 0; // FALSE
+}
+
+/******************************************************************************/
+
+s32 nz_list_clear( nz_list *list ){
+	s32 retval;
+
+	retval = NZ_ESUCCESS;
+	__NZ_CHKNULLPTR_JMP( list, retval, nz_list_clear_out );
+
+	for( ; list->begin != NULL && list->begin != list->end;
+		 nz_list_pop_front( list ) );
+
+nz_list_clear_out:;
+	return retval;
+}
+
+/******************************************************************************/
+
+s32 nz_list_splice( nz_list *target_list, nz_lnode *position, nz_list *new_list ){
+
+}
+
+/******************************************************************************/
+
+s32 nz_list_splice_pos( nz_list *target_list, nz_lnode *position, nz_list *new_list, nz_lnode *i ){
+
+}
+
+/******************************************************************************/
+
+s32 nz_list_splice_range( nz_list *target_list, nz_lnode *position, nz_list *new_list, nz_lnode *first, nz_lnode *last ){
+
 }
