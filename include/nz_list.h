@@ -33,6 +33,7 @@ struct nz_list{
 /*!	\fn s32 nz_list_init(nz_list *list)
 	\brief Initialises structure nz_list
 	\param list pointer to list to be inilialized
+	\return NZ_ESUCCESS on success, NZ_ENULLPTR on wrong input
 */
 
 s32 nz_list_init( nz_list *list );
@@ -40,12 +41,14 @@ s32 nz_list_init( nz_list *list );
 /*!	\fn s32 nz_list_exit(nz_list *list)
 	\brief creares and deinitializez list. Does not call free()!
 	\param list pointer to list to be cleared
+	\return NZ_ESUCCESS on success, NZ_EINVALID on internal logic error
 */
 s32 nz_list_exit( nz_list *list );
 
 /*!	\fn s32 nz_list_pop_back(nz_list *list)
 	\brief removes last data element from list if any
 	\param list pointer to list to be popped
+	\return NZ_ESUCCESS on success, NZ_ENULLPTR on wrong input
 */
 s32 nz_list_pop_back( nz_list *list );
 
@@ -59,6 +62,7 @@ s32 nz_list_pop_front( nz_list *list );
 	\brief pushes data pointer to data to the end of the list
 	\param list pointer to list to be populated
 	\param data pointer to data object
+	\return NZ_ESUCCESS on success, NZ_ENULLPTR on wrong input
 */
 s32 nz_list_push_back( nz_list *list, void *data );
 
@@ -66,6 +70,7 @@ s32 nz_list_push_back( nz_list *list, void *data );
 	\brief pushes data pointer to data to the begining of the list
 	\param list pointer to list to be populated
 	\param data pointer to data object
+	\return NZ_ESUCCESS on success, NZ_ENULLPTR on wrong input
 */
 s32 nz_list_push_front( nz_list *list, void *data );
 
@@ -73,6 +78,7 @@ s32 nz_list_push_front( nz_list *list, void *data );
 	\brief removes node by pointer to node
 	\param list pointer to list to be cleared
 	\param node target for removing
+	\return NZ_ESUCCESS on success, NZ_ENOTFOUND if aim is not a part of the list
 */
 s32 nz_list_remove_by_iter( nz_list *list, nz_node *node );
 
@@ -80,12 +86,15 @@ s32 nz_list_remove_by_iter( nz_list *list, nz_node *node );
 	\brief sets node destructor to list
 	\param list pointer to list to be configured
 	\param destructor_fn data deallocation function
+	\return NZ_ESUCCESS on success, NZ_ENULLPTR on wrong input
 */
 s32 nz_list_set_node_destructor( nz_list *list, nz_destructor_t destructor_fn );
 
 /*!	\fn s32 nz_list_empty( nz_list *list )
 	\brief checks if list is empty and valid
 	\param list pointer to list to be checked
+	\return 0 if full, 1 if empty,  -NZ_ENULLPTR on, 
+			-NZ_EINVALID if it's something wrong with it
 */
 s32 nz_list_empty( nz_list *list );
 
