@@ -103,7 +103,7 @@ s32 nz_list_clear( nz_list *list );
 	\param
 	\return
 */
-s32 nz_list_splice( nz_list *target_list, nz_lnode *position, nz_list *new_list );
+s32 nz_list_splice( nz_list *dst, nz_lnode *pos, nz_list *src );
 
 /*!	\fn 
 	\brief
@@ -112,7 +112,7 @@ s32 nz_list_splice( nz_list *target_list, nz_lnode *position, nz_list *new_list 
 	\param
 	\return
 */
-s32 nz_list_splice_pos( nz_list *target_list, nz_lnode *position, nz_list *new_list, nz_lnode *i );
+s32 nz_list_splice_pos( nz_list *dst, nz_lnode *pos, nz_list *src, nz_lnode *i );
 
 /*!	\fn 
 	\brief
@@ -121,7 +121,7 @@ s32 nz_list_splice_pos( nz_list *target_list, nz_lnode *position, nz_list *new_l
 	\param
 	\return
 */
-s32 nz_list_splice_range( nz_list *target_list, nz_lnode *position, nz_list *new_list, nz_lnode *first, nz_lnode *last );
+s32 nz_list_splice_range( nz_list *dst, nz_lnode *pos, nz_list *src, nz_lnode *first, nz_lnode *last );
 
 
 #endif // NZ_LIST_H

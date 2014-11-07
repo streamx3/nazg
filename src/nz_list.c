@@ -429,18 +429,28 @@ nz_list_clear_out:;
 
 /******************************************************************************/
 
-s32 nz_list_splice( nz_list *target_list, nz_lnode *position, nz_list *new_list ){
+s32 nz_list_splice (nz_list *dst, nz_lnode *pos, nz_list *src)
+{
+	s32 retval;
+
+	retval = NZ_ESUCCESS;
+	__NZ_CHKCOND_JMP( dst != NULL && pos != NULL && src != NULL,
+			  retval, nz_list_splice_out );
+
+	retval = __nz_list_splice_internal( dst, src, pos, src->begin, src->rbegin );
+
+nz_list_splice_out:;
+	return retval;
+}
+
+/******************************************************************************/
+
+s32 nz_list_splice_pos( nz_list *dst, nz_lnode *pos, nz_list *src, nz_lnode *i ){
 
 }
 
 /******************************************************************************/
 
-s32 nz_list_splice_pos( nz_list *target_list, nz_lnode *position, nz_list *new_list, nz_lnode *i ){
-
-}
-
-/******************************************************************************/
-
-s32 nz_list_splice_range( nz_list *target_list, nz_lnode *position, nz_list *new_list, nz_lnode *first, nz_lnode *last ){
+s32 nz_list_splice_range( nz_list *dst, nz_lnode *pos, nz_list *src, nz_lnode *first, nz_lnode *last ){
 
 }
