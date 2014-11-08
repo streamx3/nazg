@@ -31,3 +31,4 @@
 # Project-specific
 out/*
 build/*
+.idea/*

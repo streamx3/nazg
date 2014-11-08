@@ -26,7 +26,7 @@
 #define __NZ_CALL_NODE_DESTRUCTOR(list,node) \
 	do{ \
 		if(list && node && list->fn_node_destr != NULL && node->data != NULL){ \
-			list->fn_node_destr(node->data) \
+			list->fn_node_destr(node->data); \
 			node->data = NULL; \
 		} \
 	}while(0);
@@ -175,7 +175,7 @@ s32 nz_list_init( nz_list *list ){
 	sentinel_last = nz_malloc( sizeof(nz_node) );
 	__NZ_CHKNULLPTR_JMP( sentinel_last, retval, nz_list_init_free_sentfrst );
 
-	list->node_destructor = NULL;
+	list->fn_node_destr = NULL;
 	list->size = 0;
 
 	/*! Sentinels binding */
@@ -204,14 +204,14 @@ s32 nz_list_exit( nz_list *list ){
 	s32 retval;
 
 	retval = NZ_ESUCCESS;
-	__NZ_CHKNULLPTR_JMP( ist, retval, nz_list_exit_out );
+	__NZ_CHKNULLPTR_JMP( list, retval, nz_list_exit_out );
 
 	for( ; list->begin != NULL && list->begin != list->end;
 		 nz_list_pop_front( list ) );
 
 	if( list->begin  != NULL && list->begin  == list->end &&
 		list->rbegin != NULL && list->rbegin == list->rend &&
-		ist->begin->data == NULL){
+		list->begin->data == NULL){
 		nz_free( list->begin );
 		nz_free( list->rbegin );
 		list->rbegin = list->rend = list->begin = list->end = NULL;
@@ -370,9 +370,9 @@ s32 nz_list_remove_by_iter( nz_list *list, nz_node *aim ){
 		 node->next != aim && node != list->end && node != NULL;
 		 node = node->next );
 	if( node == aim ){
-		node->next = node->next->nextt;
+		node->next = node->next->next;
 		node->next->prev = node;
-		__NZ_CALL_NODE_DESTRUCTOR( aim );
+		__NZ_CALL_NODE_DESTRUCTOR( list, aim );
 		--(list->size);
 		retval = NZ_ESUCCESS;
 	}
@@ -383,14 +383,14 @@ nz_list_remove_by_iter_out:;
 
 /******************************************************************************/
 
-s32 nz_list_set_node_destructor( nz_list *list, nz_destructor_t destructor_fn ){
+s32 nz_list_set_node_destructor( nz_list *list, nz_destructor_t destructor ){
 	s32 retval;
 	retval = NZ_ESUCCESS;
 
-	__NZ_CHKCOND_JMP( list == NULL || destruction == NULL, retval, \
+	__NZ_CHKCOND_JMP( list == NULL || destructor == NULL, retval, \
 					  nz_list_set_node_destructor_out );
 
-	list->fn_node_destr = destructor_fn;
+	list->fn_node_destr = destructor;
 
 nz_list_set_node_destructor_out:;
 	return retval;
@@ -430,7 +430,7 @@ nz_list_clear_out:;
 
 /******************************************************************************/
 
-s32 nz_list_splice (nz_list *dst, nz_lnode *pos, nz_list *src)
+s32 nz_list_splice (nz_list *dst, nz_node *pos, nz_list *src)
 {
 	s32 retval;
 
@@ -446,12 +446,12 @@ nz_list_splice_out:;
 
 /******************************************************************************/
 
-s32 nz_list_splice_pos( nz_list *dst, nz_lnode *pos, nz_list *src, nz_lnode *i ){
+s32 nz_list_splice_pos( nz_list *dst, nz_node *pos, nz_list *src, nz_node *i ){
 
 }
 
 /******************************************************************************/
 
-s32 nz_list_splice_range( nz_list *dst, nz_lnode *pos, nz_list *src, nz_lnode *first, nz_lnode *last ){
+s32 nz_list_splice_range( nz_list *dst, nz_node *pos, nz_list *src, nz_node *first, nz_node *last ){
 
 }

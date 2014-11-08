@@ -4,7 +4,9 @@
 #include "nz_int.h"
 #include "nz_error.h"
 #include "nz_memory.h"
+#include "nz_common.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 typedef struct nz_list nz_list;
 typedef struct nz_node nz_node;
@@ -88,12 +90,12 @@ s32 nz_list_remove_by_iter( nz_list *list, nz_node *node );
 	\param destructor_fn data deallocation function
 	\return NZ_ESUCCESS on success, NZ_ENULLPTR on wrong input
 */
-s32 nz_list_set_node_destructor( nz_list *list, nz_destructor_t destructor_fn );
+s32 nz_list_set_node_destructor( nz_list *list, nz_destructor_t destructor );
 
 /*!	\fn s32 nz_list_empty( nz_list *list )
 	\brief checks if list is empty and valid
 	\param list pointer to list to be checked
-	\return 0 if full, 1 if empty,  -NZ_ENULLPTR on, 
+	\return 0 if full, 1 if empty, -NZ_ENULLPTR on,
 			-NZ_EINVALID if it's something wrong with it
 */
 s32 nz_list_empty( nz_list *list );
@@ -112,7 +114,7 @@ s32 nz_list_clear( nz_list *list );
 	\param
 	\return
 */
-s32 nz_list_splice( nz_list *dst, nz_lnode *pos, nz_list *src );
+s32 nz_list_splice( nz_list *dst, nz_node *pos, nz_list *src );
 
 /*!	\fn 
 	\brief
@@ -121,7 +123,7 @@ s32 nz_list_splice( nz_list *dst, nz_lnode *pos, nz_list *src );
 	\param
 	\return
 */
-s32 nz_list_splice_pos( nz_list *dst, nz_lnode *pos, nz_list *src, nz_lnode *i );
+s32 nz_list_splice_pos( nz_list *dst, nz_node *pos, nz_list *src, nz_node *i );
 
 /*!	\fn 
 	\brief
@@ -130,7 +132,7 @@ s32 nz_list_splice_pos( nz_list *dst, nz_lnode *pos, nz_list *src, nz_lnode *i )
 	\param
 	\return
 */
-s32 nz_list_splice_range( nz_list *dst, nz_lnode *pos, nz_list *src, nz_lnode *first, nz_lnode *last );
+s32 nz_list_splice_range( nz_list *dst, nz_node *pos, nz_list *src, nz_node *first, nz_node *last );
 
 
 #endif // NZ_LIST_H
