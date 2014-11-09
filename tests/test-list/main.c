@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "nz_list.h"
 
-int main(int arc, char* argv){
+int main(int argc, char* argv[]){
 	s32 errh;
 	nz_list list1;
 
