@@ -1,12 +1,7 @@
 #ifndef NZ_LIST_H
 #define NZ_LIST_H
 
-#include "nz_int.h"
-#include "nz_error.h"
-#include "nz_memory.h"
 #include "nz_common.h"
-#include <stdio.h>
-#include <stdlib.h>
 
 typedef struct nz_list nz_list;
 typedef struct nz_node nz_node;

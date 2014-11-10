@@ -1,6 +1,8 @@
 #ifndef NZ_ERROR_H
 #define NZ_ERROR_H
 
+#include "nz_int.h"
+
 /*! NAZG Error codes */
 #define NZ_ESUCCESS		0
 #define NZ_EUNKNOWN		1
