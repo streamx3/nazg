@@ -50,7 +50,7 @@ s32 test_1(nz_list *list)
 s32 test_2(nz_list *list)
 {
 	s32 errh,i;
-	const s32 size = 10;
+#define size 10
 	s32 data[size] = {0,1,2,3,4,5,6,7,8,9};
 
 	NZ_ASSERT(list != NULL, "Icomming data");
