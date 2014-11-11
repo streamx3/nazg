@@ -2,24 +2,13 @@
 
 /******************************************************************************/
 
-#define __NZ_CHKNULLPTR_JMP(ptr,retv,jmp) \
-	do{ \
-		if( ptr == NULL ){ \
-			retv == NZ_ENULLPTR; \
-			goto jmp; \
-		} \
-	}while(0);
-
-/******************************************************************************/
-
-/* Will jump if condition is true */
-#define __NZ_CHKCOND_JMP(cond,retv,jmp) \
-	do{ \
-		if( cond ){ \
-			retv == NZ_ENULLPTR; \
-			goto jmp; \
-		} \
-	}while(0);
+void __show_list_ptrs(nz_list *list){
+	NZ_LOG("list = %p", list);
+	NZ_LOG("list->begin = %p", list->begin);
+	NZ_LOG("list->rbegin = %p", list->rbegin);
+	NZ_LOG("list->end = %p", list->end);
+	NZ_LOG("list->rend = %p", list->rend);
+}
 
 /******************************************************************************/
 
@@ -140,8 +129,9 @@ void __nz_node_push_to_empty_list( nz_list *list, nz_node *node ){
 	list->rend->next = node;
 	list->end->prev = node;
 
-	list->begin = node;
-	list->rbegin = node;
+	__show_list_ptrs(list);
+//	list->begin = node;
+//	list->rbegin = node;
 }
 
 /******************************************************************************/

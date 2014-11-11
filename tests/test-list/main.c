@@ -9,6 +9,8 @@ int main(int argc, char* argv[]){
 
 	errh = test_1(&list1);
 	NZ_ASSERT(errh == NZ_ESUCCESS, "TEST 1");
+	errh = test_2(&list1);
+	NZ_ASSERT(errh == NZ_ESUCCESS, "TEST 2");
 
 	return 0;
 }

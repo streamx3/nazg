@@ -33,6 +33,58 @@
 #define BOLDCYAN	"\033[1m\033[36m"	// Bold Cyan
 #define BOLDWHITE	"\033[1m\033[37m"	// Bold White
 
+/*** Useful macro *************************************************************/
+
+#define __NZ_CHKNULLPTR_JMP(ptr,retv,jmp) \
+	do{ \
+		if( ptr == NULL ){ \
+			retv == NZ_ENULLPTR; \
+			goto jmp; \
+		} \
+	}while(0);
+
+/* Will jump if condition is true */
+#define __NZ_CHKCOND_JMP(cond,retv,jmp) \
+	do{ \
+		if( cond ){ \
+			retv == NZ_ENULLPTR; \
+			goto jmp; \
+		} \
+	}while(0);
+
+/*** CLI-LOGS *****************************************************************/
+
+#ifdef NZ_USERSPACE
+
+#define NZ_LOG(fmt, ...) \
+do{\
+	printf( "[" GREEN "NZ L" RESET "][%s][%d][%s]" fmt "\n", \
+	__FILE__, __LINE__, __FUNCTION__, ##__VA_ARGS__ ); \
+}while(0)
+
+#define NZ_ERR(fmt, ...) \
+do{\
+	printf( "[" RED "NZ E" RESET "][%s][%d][%s]" fmt "\n", \
+	__FILE__, __LINE__, __FUNCTION__, ##__VA_ARGS__ ); \
+}while(0)
+
+#else
+
+#define NZ_LOG(fmt, ...) \
+do{\
+	printk(KERN_NOTICE"[" GREEN "NZ L" RESET "][%s][%d][%s]" fmt "\n", \
+	__FILE__, __LINE__, __FUNCTION__, ##__VA_ARGS__ ); \
+}while(0)
+
+#define NZ_ERR(fmt, ...) \
+do{\
+	printk(KERN_ERR"[" RED "NZ E" RESET "][%s][%d][%s]" fmt "\n", \
+	__FILE__, __LINE__, __FUNCTION__, ##__VA_ARGS__ ); \
+}while(0)
+
+
+#endif
+
 /*** Types ********************************************************************/
 
 typedef void (*nz_destructor_t)(void*);
