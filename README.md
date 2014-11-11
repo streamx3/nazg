@@ -3,13 +3,15 @@ nazg
 
 functionality I miss in C and Linux
 
-Build and install
+Build and Deploy
 =================
 
-1) cd build
+*  cd build
 
-2) cmake ..
+** ./run b # For regular build
 
-3) make install
+** ./run bd # For regular build
+
+** ./run c # for clearinig
 
 After this, everything you need is in "out" directory.

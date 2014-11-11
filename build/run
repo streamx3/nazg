@@ -1,0 +1,47 @@
+#!/bin/bash
+
+build () {
+	echo "Buildding non-debug...."
+	cmake ..
+	make
+	make install
+}
+
+build_debug () {
+	echo "Buildding debug...."
+	cmake -DCMAKE_BUILD_TYPE=Debug ..
+	make
+	make install
+}
+
+clean () {
+	for a in `ls | grep -v run` ; do rm -rfv $a; done
+	rm -rfv ../out
+}
+
+wrong_option () {
+	echo "Wrong option!"
+}
+
+
+if [ -z "$1" ]
+then
+	echo "Error! No potion given!"
+	exit 1;
+else
+	case "$1" in
+	"build" | "b" )
+		build
+		;;
+	"build_debug" | "bd" )
+		build_debug
+		;;
+	"clean" | "c" )
+		clean
+		;;
+	*)
+		wrong_option
+		;;
+	esac
+fi
+
