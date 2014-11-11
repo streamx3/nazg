@@ -1,4 +1,4 @@
-#include "test_1.h"
+#include "tests_pack_1.h"
 
 s32 test_1(nz_list *list)
 {
@@ -10,6 +10,5 @@ s32 test_1(nz_list *list)
 	retval = nz_list_exit(list);
 	NZ_ASSERT(retval == NZ_ESUCCESS, "List exit");
 
-test_1_out:;
 	return retval;
 }
