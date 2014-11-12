@@ -26,7 +26,7 @@ wrong_option () {
 
 if [ -z "$1" ]
 then
-	echo "Error! No potion given!"
+	echo "Error! No option given!"
 	exit 1;
 else
 	case "$1" in
