@@ -197,7 +197,7 @@ s32 nz_list_exit( nz_list *list ){
 	__NZ_CHKNULLPTR_JMP( list, retval, nz_list_exit_out );
 
 	for( ; list->begin != NULL && list->begin != list->end;
-		 nz_list_pop_front( list ) );
+		 nz_list_pop_front( list ) ); //TODO Bug loop here
 
 	if( list->begin  != NULL && list->begin  == list->end &&
 		list->rbegin != NULL && list->rbegin == list->rend &&
@@ -246,6 +246,7 @@ nz_list_pop_back_out:;
 /******************************************************************************/
 
 s32 nz_list_pop_front( nz_list *list ){
+	//TODO Find and fix bug here
 	nz_node *node;
 	s32 retval;
 	retval = NZ_ESUCCESS;

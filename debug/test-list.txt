@@ -15,9 +15,12 @@ delete 1
 echo c\n
 c
 
-echo print *list
+echo print *list 
 print *list
 
-echo print list
+echo print list 
 print list
+
+echo break nz_list_exit\n
+break nz_list_exit
 

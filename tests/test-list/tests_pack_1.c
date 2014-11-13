@@ -8,7 +8,7 @@ s32 show_list_s32(nz_list *list)
 	printf("nz_list[%p]{size = %u}:\n",(void*)list, list->size);
 	for(i = 0, it = list->begin;
 		i < list->size && it != NULL && it != list->end;
-		++i){
+		++i, it = it->next){
 		printf("[%u][%d]\n",i,*((s32*)it->data));
 	}
 
