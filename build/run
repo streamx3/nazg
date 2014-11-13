@@ -19,10 +19,13 @@ clean () {
 	rm -rfv ../out
 }
 
+debug () {
+	gdb --silent -x ../debug/test-list.txt
+}
+
 wrong_option () {
 	echo "Wrong option!"
 }
-
 
 if [ -z "$1" ]
 then
@@ -38,6 +41,9 @@ else
 		;;
 	"clean" | "c" )
 		clean
+		;;
+	"gdb" | "g" )
+		debug
 		;;
 	*)
 		wrong_option

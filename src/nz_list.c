@@ -130,8 +130,8 @@ void __nz_node_push_to_empty_list( nz_list *list, nz_node *node ){
 	list->end->prev = node;
 
 	__show_list_ptrs(list);
-//	list->begin = node;
-//	list->rbegin = node;
+	list->begin = node;
+	list->rbegin = node;
 }
 
 /******************************************************************************/

@@ -1,0 +1,23 @@
+file ../out/bin/test-list
+
+echo tb nz_list_push_back\n
+tb nz_list_push_back
+
+echo run\n
+run
+
+echo b show_list_s32\n
+b show_list_s32
+
+echo delete 1\n
+delete 1
+
+echo c\n
+c
+
+echo print *list
+print *list
+
+echo print list
+print list
+
