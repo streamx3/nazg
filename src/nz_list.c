@@ -299,6 +299,7 @@ s32 nz_list_push_back( nz_list *list, void *data ){
 		__nz_node_bind_new_neigh( list->rbegin, node,list->end );
 		list->rbegin = node;
 	}
+	++(list->size);
 
 nz_list_push_back_out:;
 	return retval;
@@ -330,6 +331,7 @@ s32 nz_list_push_front( nz_list *list, void *data ){
 		__nz_node_bind_new_neigh( list->rend, node, list->begin );
 		list->begin = node;
 	}
+	++(list->size);
 
 nz_list_push_back_out:;
 	return retval;
