@@ -54,7 +54,7 @@ LEGEND
 
 DESCRIPTION
 	This function is just like std::list.splice();
-	You know, like move move chain [ps1]-...-[ps2] between [pd1->prev] and [pd1].
+	You know, like move move chain [ps1]-...-[ps2] between [pd1->prev] and [pd1]
 	It becomes [pd1->prev]-[ps1]-...-[ps2]-[pd1].
 */
 
@@ -435,11 +435,12 @@ nz_list_splice_out:;
 
 /******************************************************************************/
 
-s32 nz_list_splice_pos(nz_list *dst, nz_node *pos, nz_list *src, nz_node *src_pos)
+s32 nz_list_splice_pos(nz_list *dst, nz_node *pos,
+					   nz_list *src, nz_node *src_pos)
 {
 	s32 retval;
-	__NZ_CHKCOND_JMP(dst != NULL && pos != NULL && src != NULL && src_pos != NULL,
-					 retval, nz_list_splice_pos_out);
+	__NZ_CHKCOND_JMP(dst != NULL && pos != NULL && src != NULL
+					 && src_pos != NULL, retval, nz_list_splice_pos_out);
 	retval = __nz_list_splice_internal(dst, src, pos, src_pos, src_pos);
 nz_list_splice_pos_out:;
 	return retval;
@@ -447,7 +448,8 @@ nz_list_splice_pos_out:;
 
 /******************************************************************************/
 
-s32 nz_list_splice_range(nz_list *dst, nz_node *pos, nz_list *src, nz_node *first, nz_node *last)
+s32 nz_list_splice_range(nz_list *dst, nz_node *pos, nz_list *src,
+						 nz_node *first, nz_node *last)
 {
 	s32 retval;
 	__NZ_CHKCOND_JMP(dst != NULL && pos != NULL && src != NULL &&

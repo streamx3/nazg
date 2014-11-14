@@ -51,7 +51,7 @@ s32 test_2(nz_list *list)
 {
 	s32 errh,i;
 #define size 10
-	s32 data[size] = {0,1,2,3,4,5,6,7,8,9};
+	s32 data[size] = {10,11,12,13,14,15,16,17,18,19};
 
 	NZ_ASSERT(list != NULL, "Icomming data");
 
@@ -63,6 +63,12 @@ s32 test_2(nz_list *list)
 		NZ_LOG("i = %d;",i);
 		nz_list_push_back(list, &(data[i]));
 	}
+	show_list_s32(list);
+
+	listverify_s32(list, data, size);
+
+	nz_list_pop_back(list);
+
 	show_list_s32(list);
 
 	nz_list_exit(list);
