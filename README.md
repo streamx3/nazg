@@ -7,9 +7,9 @@ Build and Deploy
 =================
 
 *  cd build
-  * ./run b # For regular build
-  * ./run bd # For regular build
+  * ./run b # for regular build
+  * ./run bd # for regular build
   * ./run c # for clearinig
   * ./run g # for debugging test-list
 
-After this, everything you need is in "out" directory.
+After ./run b or ./run bd, binaries "out" directory.
