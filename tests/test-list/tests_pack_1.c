@@ -15,7 +15,7 @@ s32 show_list_s32(nz_list *list)
 	return retval;
 }
 
-s32 listverify_s32(nz_list *list, s32 *arr[], u32 size)
+s32 listverify_s32(nz_list *list, s32 *arr, u32 size)
 {
 	u32 i;
 	nz_node *it;
@@ -27,7 +27,7 @@ s32 listverify_s32(nz_list *list, s32 *arr[], u32 size)
 		i < size && it != NULL && it->data != NULL && it != list->end;
 		it = it->next, ++i){
 
-		if((*((s32*)it->data)) !=(*arr[i]) ) {
+		if((*((s32*)it->data)) !=(arr[i]) ) {
 			return NZ_EINVALID;
 		}
 	}
@@ -65,13 +65,24 @@ s32 test_2(nz_list *list)
 	}
 	show_list_s32(list);
 
-	listverify_s32(list, data, size);
+	errh = listverify_s32(list, data, size);
+	NZ_ASSERT(errh == NZ_ESUCCESS, "list_verify 1");
 
-	nz_list_pop_back(list);
+	errh = nz_list_pop_back(list);
+	NZ_ASSERT(errh == NZ_ESUCCESS, "pop_back_1");
+	errh = nz_list_pop_back(list);
+	NZ_ASSERT(errh == NZ_ESUCCESS, "pop_back_2");
+	errh = nz_list_pop_back(list);
+	NZ_ASSERT(errh == NZ_ESUCCESS, "pop_back_3");
+
+
+	errh = listverify_s32(list, data, size-3);
+	NZ_ASSERT(errh == NZ_ESUCCESS, "list_verify 2");
 
 	show_list_s32(list);
 
-	nz_list_exit(list);
+	errh = nz_list_exit(list);
+	NZ_ASSERT(errh == NZ_ESUCCESS, "list_exit");
 
 	return NZ_ESUCCESS;
 }
