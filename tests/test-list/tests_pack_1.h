@@ -12,4 +12,9 @@ s32 test_1(nz_list *list);
 
 s32 test_2(nz_list *list);
 
+// nz_list_remove_my_iter test
+s32 test_3(nz_list *list);
+
+s32 test_4(nz_list *list);
+
 #endif //  TESTS_PACK_1_H

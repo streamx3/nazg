@@ -87,7 +87,6 @@ s32 test_2(nz_list *list)
 	return NZ_ESUCCESS;
 }
 
-// Testing nz_list_remove_by_iter
 s32 test_3(nz_list *list)
 {
 #define t3_size 5
@@ -121,6 +120,12 @@ s32 test_3(nz_list *list)
 	errh = nz_list_exit(list);
 
 	NZ_ASSERT(errh == NZ_ESUCCESS, "Exit");
+
+	return NZ_ESUCCESS;
+}
+
+s32 test_3(nz_list *list)
+{
 
 	return NZ_ESUCCESS;
 }
