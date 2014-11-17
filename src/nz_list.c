@@ -376,7 +376,7 @@ s32 nz_list_remove_by_iter( nz_list *list, nz_node *aim ){
 	for( node = list->begin;
 		 node->next != aim && node != list->end && node != NULL;
 		 node = node->next );
-	if( node == aim ){
+	if( node->next == aim ){
 		node->next = node->next->next;
 		node->next->prev = node;
 		__NZ_CALL_NODE_DESTRUCTOR( list, aim );
