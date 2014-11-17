@@ -1,26 +1,12 @@
 file ../out/bin/test-list
 
-echo tb nz_list_push_back\n
 tb nz_list_push_back
-
-echo run\n
-run
-
-echo b show_list_s32\n
 b show_list_s32
-
-echo delete 1\n
+b nz_list_init
+run
+b nz_list_pop_back
 delete 1
-
-echo c\n
+break nz_list_exit
 c
 
-echo print *list 
-print *list
-
-echo print list 
-print list
-
-echo break nz_list_exit\n
-break nz_list_exit
 

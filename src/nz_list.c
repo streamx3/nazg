@@ -215,29 +215,36 @@ nz_list_exit_out:;
 
 /******************************************************************************/
 
-s32 nz_list_pop_back( nz_list *list ){
+s32 nz_list_pop_back(nz_list *list)
+{
 	nz_node *node;
 	s32 retval;
 	retval = NZ_ESUCCESS;
 
-	__NZ_CHKCOND_JMP( list == NULL || list->end == NULL, \
-					  retval, nz_list_pop_back_out );
+	__NZ_CHKCOND_JMP(list == NULL || list->end == NULL, \
+					 retval, nz_list_pop_back_out);
 
-	if( list->begin != list->end && list->size ){
-		/* Get target */
-		node = list->end;
-		/* Rebuild tail */
-		list->end = list->end->prev;
-		list->end->next = list->rbegin;
-		list->rbegin->prev = list->end;
-
-		if( node == list->rend ){
-			list->rend = list->rbegin;
-		}
-		__NZ_CALL_NODE_DESTRUCTOR(list, node);
-		nz_free( node );
-		--(list->size);
+	if(list->begin == list->end || list->size == 0){
+		retval = NZ_ENOTFOUND;
+		goto nz_list_pop_back_out;
 	}
+	/* else */
+
+	/* Get target */
+	node = list->rbegin;
+	/* Rebuild tail */
+	list->rbegin = list->rbegin->prev;
+	list->rbegin->next = list->end;
+	list->end->prev = list->rbegin;
+
+	/* If list has only one node */
+	if(node == list->begin){
+		list->rend = list->rbegin;
+		list->end = list->begin;
+	}
+	__NZ_CALL_NODE_DESTRUCTOR(list, node);
+	nz_free(node);
+	--(list->size);
 
 nz_list_pop_back_out:;
 	return retval;
@@ -245,30 +252,37 @@ nz_list_pop_back_out:;
 
 /******************************************************************************/
 
-s32 nz_list_pop_front( nz_list *list ){
+s32 nz_list_pop_front(nz_list *list)
+{
 	//TODO Find and fix bug here
 	nz_node *node;
 	s32 retval;
 	retval = NZ_ESUCCESS;
 
-	__NZ_CHKCOND_JMP( list == NULL || list->begin == NULL, \
-					  retval, nz_list_pop_front_out );
-
-	if( list->begin != list->end && list->size > 0 ){
-		/* Get target */
-		node = list->begin;
-		/* Rebuild tail */
-		list->begin = list->begin->next;
-		list->begin->prev = list->rend;
-		list->rend->next = list->begin;
-
-		if( node == list->rend ){
-			list->rbegin = list->rend;
-		}
-		__NZ_CALL_NODE_DESTRUCTOR(list, node);
-		nz_free( node );
-		--(list->size);
+	__NZ_CHKCOND_JMP(list == NULL || list->begin == NULL, \
+					 retval, nz_list_pop_front_out);
+					 \
+	if(list->begin == list->end || list->size == 0){
+		retval = NZ_ENOTFOUND;
+		goto nz_list_pop_front_out;
 	}
+	/* else */
+
+	/* Get target */
+	node = list->begin;
+	/* Rebuild tail */
+	list->begin = list->begin->next;
+	list->begin->prev = list->rend;
+	list->rend->next = list->begin;
+
+	/* If list has only one node */
+	if(node == list->rbegin){
+		list->rbegin = list->rend;
+		list->begin = list->end;
+	}
+	__NZ_CALL_NODE_DESTRUCTOR(list, node);
+	nz_free(node);
+	--(list->size);
 
 nz_list_pop_front_out:;
 	return retval;
