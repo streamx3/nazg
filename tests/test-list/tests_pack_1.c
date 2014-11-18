@@ -124,10 +124,21 @@ s32 test_3(nz_list *list)
 	return NZ_ESUCCESS;
 }
 
+
+static void destructor_free_s32(void *data)
+{
+	if(data == NULL){
+		printf("TEST DESTRUCTOR ERROR: Invalid data!");
+		return ; //(void*)(-NZ_ENULLPTR);
+	}else{
+		nz_free(data);
+	}
+}
+
 s32 test_4(nz_list *list)
 {
 #define t4_size 2
-	s32 errh;
+	s32 errh, *p_var, i;
 	s32 data[t4_size] = {41,42};
 
 	NZ_ASSERT(list != NULL, "Incoming data");
@@ -135,7 +146,15 @@ s32 test_4(nz_list *list)
 	errh = nz_list_init(list);
 	NZ_ASSERT(errh == NZ_ESUCCESS, "List init");
 
-//	nz_list_push_back(list, );
+	for(i = 0; i < t4_size; ++i){
+		p_var = nz_malloc(sizeof(s32));
+		NZ_ASSERT(p_var != NULL, "malloc #%d;", i);
+		*p_var = data[i];
+		errh = nz_list_push_back(list,p_var);
+		NZ_ASSERT(errh == NZ_ESUCCESS, "push_back #%d;", i);
+	}
+
+	nz_list_set_node_destructor(list, destructor_free_s32);
 
 	errh = nz_list_exit(list);
 	NZ_ASSERT(errh == NZ_ESUCCESS, "List exit");
