@@ -124,8 +124,21 @@ s32 test_3(nz_list *list)
 	return NZ_ESUCCESS;
 }
 
-s32 test_3(nz_list *list)
+s32 test_4(nz_list *list)
 {
+#define t4_size 2
+	s32 errh;
+	s32 data[t4_size] = {41,42};
+
+	NZ_ASSERT(list != NULL, "Incoming data");
+
+	errh = nz_list_init(list);
+	NZ_ASSERT(errh == NZ_ESUCCESS, "List init");
+
+//	nz_list_push_back(list, );
+
+	errh = nz_list_exit(list);
+	NZ_ASSERT(errh == NZ_ESUCCESS, "List exit");
 
 	return NZ_ESUCCESS;
 }
