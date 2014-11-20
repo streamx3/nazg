@@ -103,11 +103,12 @@ s32 nz_list_empty( nz_list *list );
 s32 nz_list_clear( nz_list *list );
 
 /*!	\fn s32 nz_list_splice(nz_list *dst, nz_node *pos, nz_list *src)
-	\brief
-	\param
-	\param
-	\param
-	\return
+	\brief nz_list_splice Moves src-list to dst-list, into pos->next
+	\param dst destination for splicing
+	\param pos splicing position
+	\param src list to be spliced out entirely
+	\return NZ_ESUCCESS on success, NZ_ENULLPTR on some NULL incomming,
+	NZ_ENOTFOUND on NOT-NULL but invalid incomming data
 */
 s32 nz_list_splice(nz_list *dst, nz_node *pos, nz_list *src);
 

@@ -179,60 +179,60 @@ s32 test_5(nz_list *list)
 	NZ_ASSERT(list != NULL, "T5: Incomming data");
 
 	errh = nz_list_init(list);
-	NZ_ASSERT(errh == NZ_ESUCCESS, "list init incomming");
+	NZ_ASRT_DUMB("list init incomming");
 	errh = nz_list_init(&spll);
-	NZ_ASSERT(errh == NZ_ESUCCESS, "list init local");
+	NZ_ASRT_DUMB("list init local");
 
 	// Primer to dest
 	errh = nz_list_push_back(list, &(data[0]));
-	NZ_ASSERT(errh == NZ_ESUCCESS, "d[0]->dst");
+	NZ_ASRT_DUMB("d[0]->dst");
 
 	// Portion of data to splicing-buffer list
 	errh = nz_list_push_back(&spll,&(data[1]));
-	NZ_ASSERT(errh == NZ_ESUCCESS, "d[1]->dst");
+	NZ_ASRT_DUMB("d[1]->dst");
 	errh = nz_list_push_back(&spll,&(data[2]));
-	NZ_ASSERT(errh == NZ_ESUCCESS, "d[2]->dst");
+	NZ_ASRT_DUMB("d[2]->dst");
 	errh = nz_list_push_back(&spll,&(data[3]));
-	NZ_ASSERT(errh == NZ_ESUCCESS, "d[3]->dst");
+	NZ_ASRT_DUMB("d[3]->dst");
 
 	// Test 5.1
 	errh = nz_list_splice(list,list->begin,&spll);
-	NZ_ASSERT(errh == NZ_ESUCCESS, "simple splicing to begin of dest list");
+	NZ_ASRT_DUMB("simple splicing to begin of dest list");
 	errh = listverify_s32(list,stg1,stg1sz);
-	NZ_ASSERT(errh == NZ_ESUCCESS, "T5: verification 1");
+	NZ_ASRT_DUMB("T5: verification 1");
 
 	// Another portion of data to splicing-buffer list
 	errh = nz_list_push_back(&spll,&(data[4]));
-	NZ_ASSERT(errh == NZ_ESUCCESS, "d[4]->dst");
+	NZ_ASRT_DUMB("d[4]->dst");
 	errh = nz_list_push_back(&spll,&(data[5]));
-	NZ_ASSERT(errh == NZ_ESUCCESS, "d[5]->dst");
+	NZ_ASRT_DUMB("d[5]->dst");
 	errh = nz_list_push_back(&spll,&(data[6]));
-	NZ_ASSERT(errh == NZ_ESUCCESS, "d[6]->dst");
+	NZ_ASRT_DUMB("d[6]->dst");
 
 	// Test 5.2
 	errh = nz_list_splice(list,list->end,&spll);
-	NZ_ASSERT(errh == NZ_ESUCCESS, "simple splicing to end of dest list");
+	NZ_ASRT_DUMB("simple splicing to end of dest list");
 	errh = listverify_s32(list,stg1,stg1sz);
-	NZ_ASSERT(errh == NZ_ESUCCESS, "T5: verification 2");
+	NZ_ASRT_DUMB("T5: verification 2");
 
 	// Another portion of data to splicing-buffer list
 	errh = nz_list_push_back(&spll,&(data[7]));
-	NZ_ASSERT(errh == NZ_ESUCCESS, "d[7]->dst");
+	NZ_ASRT_DUMB("d[7]->dst");
 	errh = nz_list_push_back(&spll,&(data[8]));
-	NZ_ASSERT(errh == NZ_ESUCCESS, "d[8]->dst");
+	NZ_ASRT_DUMB("d[8]->dst");
 	errh = nz_list_push_back(&spll,&(data[9]));
-	NZ_ASSERT(errh == NZ_ESUCCESS, "d[9]->dst");
+	NZ_ASRT_DUMB("d[9]->dst");
 
 	// Test 5.3
 	errh = nz_list_splice(list,list->begin->next->next->next,&spll);
-	NZ_ASSERT(errh == NZ_ESUCCESS, "simple splicing to middle of dest list");
+	NZ_ASRT_DUMB("simple splicing to middle of dest list");
 	errh = listverify_s32(list,stg1,stg1sz);
-	NZ_ASSERT(errh == NZ_ESUCCESS, "T5: verification 3");
+	NZ_ASRT_DUMB("T5: verification 3");
 
 	errh = nz_list_exit(list);
-	NZ_ASSERT(errh == NZ_ESUCCESS, "list exit incomming");
+	NZ_ASRT_DUMB("list exit incomming");
 	errh = nz_list_exit(&spll);
-	NZ_ASSERT(errh == NZ_ESUCCESS, "list exit local");
+	NZ_ASRT_DUMB("list exit local");
 
 	return errh;
 }
