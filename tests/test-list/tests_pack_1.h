@@ -15,6 +15,10 @@ s32 test_2(nz_list *list);
 // nz_list_remove_my_iter test
 s32 test_3(nz_list *list);
 
+// nz_list_set_node_destructor test
 s32 test_4(nz_list *list);
+
+// nz_list_splice test
+s32 test_5(nz_list *list);
 
 #endif //  TESTS_PACK_1_H
