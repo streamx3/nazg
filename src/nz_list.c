@@ -2,6 +2,16 @@
 
 /******************************************************************************/
 
+void __nz_ptrswap( void **a, void **b)
+{
+	void *c;
+	c = *(a);
+	*(a) = *(b);
+	*(b) = c;
+}
+
+/******************************************************************************/
+
 void __show_list_ptrs(nz_list *list){
 	NZ_LOG("list = %p", list);
 	NZ_LOG("list->begin = %p", list->begin);
@@ -441,6 +451,7 @@ nz_list_clear_out:;
 s32 nz_list_splice(nz_list *dst, nz_node *pos, nz_list *src)
 {
 	s32 retval;
+	retval = NZ_ESUCCESS;
 	__NZ_CHKCOND_JMP(dst != NULL && pos != NULL && src != NULL,
 					 retval, nz_list_splice_out);
 	retval = __nz_list_splice_internal(dst, src, pos, src->begin, src->rbegin);
@@ -454,6 +465,7 @@ s32 nz_list_splice_pos(nz_list *dst, nz_node *pos,
 					   nz_list *src, nz_node *src_pos)
 {
 	s32 retval;
+	retval = NZ_ESUCCESS;
 	__NZ_CHKCOND_JMP(dst != NULL && pos != NULL && src != NULL \
 					 && src_pos != NULL, retval, \
 					 nz_list_splice_pos_out);
@@ -468,6 +480,7 @@ s32 nz_list_splice_range(nz_list *dst, nz_node *pos, nz_list *src,
 						 nz_node *first, nz_node *last)
 {
 	s32 retval;
+	retval = NZ_ESUCCESS;
 	__NZ_CHKCOND_JMP(dst != NULL && pos != NULL && src != NULL &&
 					 first != NULL && last != NULL,
 					 retval, nz_list_splice_range_out);
@@ -497,6 +510,52 @@ s32 nz_list_resize(nz_list *list, u32 size, void* val)
 	}
 
 nz_list_resize_out:;
+	return retval;
+}
+
+/******************************************************************************/
+
+s32 nz_list_swap(nz_list *a, nz_list *b)
+{
+	s32 retval;
+	u32 tmpsz;
+
+	retval = NZ_ESUCCESS;
+	__NZ_CHKCOND_JMP(a == NULL || b == NULL, retval, nz_list_swap_out);
+
+	// TODO implement internal validation and use it here
+
+	__nz_ptrswap(&(a->begin), &(b->begin));
+	__nz_ptrswap(&(a->rbegin),&(b->rbegin));
+	__nz_ptrswap(&(a->rend),  &(b->rend));
+	__nz_ptrswap(&(a->end),   &(b->end));
+
+	tmpsz = a->size;
+	a->size = b->size;
+	b->size = tmpsz;
+
+nz_list_swap_out:;
+	return retval;
+}
+
+/******************************************************************************/
+
+s32 nz_list_reverse(nz_list *list) {
+	s32 retval;
+	nz_node *it;
+	nz_list l2; // Buffer list
+
+	__NZ_CHKNULLPTR_JMP(list, retval, nz_list_reverse_out);
+	retval = NZ_ESUCCESS;
+
+	l2.begin = list->rbegin;
+	l2.rbegin = list->begin;
+	for(it = l2.begin; it != l2.rbegin; it = it->next){
+		__nz_ptrswap(&(it->next), &(it->prev));
+	}
+	// TODO Continue here
+
+nz_list_reverse_out:;
 	return retval;
 }
 
