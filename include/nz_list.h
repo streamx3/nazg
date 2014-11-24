@@ -130,5 +130,13 @@ s32 nz_list_splice_pos(nz_list *dst, nz_node *pos, nz_list *src, nz_node *i);
 */
 s32 nz_list_splice_range(nz_list *dst, nz_node *pos, nz_list *src, nz_node *first, nz_node *last);
 
+/*	\fn s32 nz_list_resize(nz_list *list, u32 size, void* val)
+	\brief resizes list to be as long as "size"
+	\param list target list to resize
+	\param size new size of list
+	\param val default initializer; can be NULL
+	\return NZ_ESUCCESS on success, NZ_ENULLPTR if wrong list given
+*/
+s32 nz_list_resize(nz_list *list, u32 size, void* val);
 
 #endif // NZ_LIST_H

@@ -153,17 +153,17 @@ void __nz_node_bind_new_neigh( nz_node *a, nz_node *b, nz_node *c){
 
 /******************************************************************************/
 
-s32 nz_list_init( nz_list *list ){
+s32 nz_list_init(nz_list *list){
 	nz_node *sentinel_first, *sentinel_last;
 	s32 retval;
 
 	retval = NZ_ESUCCESS;
 
-	__NZ_CHKNULLPTR_JMP( list, retval, nz_list_init_out );
-	sentinel_first = nz_malloc( sizeof(nz_node) );
-	__NZ_CHKNULLPTR_JMP( sentinel_first, retval, nz_list_init_out );
-	sentinel_last = nz_malloc( sizeof(nz_node) );
-	__NZ_CHKNULLPTR_JMP( sentinel_last, retval, nz_list_init_free_sentfrst );
+	__NZ_CHKNULLPTR_JMP(list, retval, nz_list_init_out);
+	sentinel_first = nz_malloc(sizeof(nz_node));
+	__NZ_CHKNULLPTR_JMP(sentinel_first, retval, nz_list_init_out);
+	sentinel_last = nz_malloc(sizeof(nz_node));
+	__NZ_CHKNULLPTR_JMP(sentinel_last, retval, nz_list_init_free_sentfrst);
 
 	list->fn_node_destr = NULL;
 	list->size = 0;
@@ -411,7 +411,8 @@ s32 nz_list_empty(nz_list *list){
 	}
 	if(list->size == 0){
 		if(list->begin == list->end && list->rend == list->rbegin &&
-		   list->begin->prev == list->rbegin &&list->rend->next == list->end){
+		   list->begin->prev == list->rbegin &&
+		   list->rend->next == list->end){
 			return 1; // TRUE AND VALID
 		}else{
 			return -NZ_EINVALID;
@@ -453,8 +454,9 @@ s32 nz_list_splice_pos(nz_list *dst, nz_node *pos,
 					   nz_list *src, nz_node *src_pos)
 {
 	s32 retval;
-	__NZ_CHKCOND_JMP(dst != NULL && pos != NULL && src != NULL
-					 && src_pos != NULL, retval, nz_list_splice_pos_out);
+	__NZ_CHKCOND_JMP(dst != NULL && pos != NULL && src != NULL \
+					 && src_pos != NULL, retval, \
+					 nz_list_splice_pos_out);
 	retval = __nz_list_splice_internal(dst, src, pos, src_pos, src_pos);
 nz_list_splice_pos_out:;
 	return retval;
@@ -473,3 +475,29 @@ s32 nz_list_splice_range(nz_list *dst, nz_node *pos, nz_list *src,
 nz_list_splice_range_out:;
 	return retval;
 }
+
+/******************************************************************************/
+
+s32 nz_list_resize(nz_list *list, u32 size, void* val)
+{
+	s32 retval, errh;
+	u32 i;
+
+	retval = NZ_ESUCCESS;
+	__NZ_CHKNULLPTR_JMP(list,retval,nz_list_resize_out);
+	__nz_list_size_reset(list);
+	if(size == list->size){
+		return retval;
+	}
+	while(errh == NZ_ESUCCESS && size < list->size){
+		errh = nz_list_pop_back(list);
+	}
+	while(errh == NZ_ESUCCESS && size > list->size){
+		errh = nz_list_push_back(list,val);
+	}
+
+nz_list_resize_out:;
+	return retval;
+}
+
+/******************************************************************************/
