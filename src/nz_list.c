@@ -538,10 +538,10 @@ s32 nz_list_swap(nz_list *a, nz_list *b)
 
 	// TODO implement internal validation and use it here
 
-	__nz_ptrswap(&(a->begin), &(b->begin));
-	__nz_ptrswap(&(a->rbegin),&(b->rbegin));
-	__nz_ptrswap(&(a->rend),  &(b->rend));
-	__nz_ptrswap(&(a->end),   &(b->end));
+	__nz_ptrswap((void*)&(a->begin), (void*)&(b->begin));
+	__nz_ptrswap((void*)&(a->rbegin),(void*)&(b->rbegin));
+	__nz_ptrswap((void*)&(a->rend),  (void*)&(b->rend));
+	__nz_ptrswap((void*)&(a->end),   (void*)&(b->end));
 
 	tmpsz = a->size;
 	a->size = b->size;
@@ -564,7 +564,7 @@ s32 nz_list_reverse(nz_list *list) {
 	l2.begin = list->rbegin;
 	l2.rbegin = list->begin;
 	for(it = l2.begin; it != l2.rbegin; it = it->next){
-		__nz_ptrswap(&(it->next), &(it->prev));
+		__nz_ptrswap((void*)&(it->next), (void*)&(it->prev));
 	}
 	// TODO Continue here
 

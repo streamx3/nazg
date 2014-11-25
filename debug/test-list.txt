@@ -1,12 +1,10 @@
 file ../out/bin/test-list
 
-tb nz_list_push_back
-b show_list_s32
-b nz_list_init
+tb test_5
+tb test_6
+tb listverify_s32
 run
-b nz_list_pop_back
-delete 1
-break nz_list_exit
-c
+tb 227
+b nz_list_resize
 
 

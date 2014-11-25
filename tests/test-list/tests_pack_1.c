@@ -212,7 +212,7 @@ s32 test_5(nz_list *list)
 	// Test 5.2
 	errh = nz_list_splice(list,list->end,&spll);
 	NZ_ASRT_DUMB("simple splicing to end of dest list");
-	errh = listverify_s32(list,stg1,stg1sz);
+	errh = listverify_s32(list,stg2,stg2sz);
 	NZ_ASRT_DUMB("T5: verification 2");
 
 	// Another portion of data to splicing-buffer list
@@ -226,7 +226,7 @@ s32 test_5(nz_list *list)
 	// Test 5.3
 	errh = nz_list_splice(list,list->begin->next->next->next,&spll);
 	NZ_ASRT_DUMB("simple splicing to middle of dest list");
-	errh = listverify_s32(list,stg1,stg1sz);
+	errh = listverify_s32(list,stg3,stg3sz);
 	NZ_ASRT_DUMB("T5: verification 3");
 
 	errh = nz_list_exit(list);
