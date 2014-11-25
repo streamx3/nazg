@@ -139,4 +139,19 @@ s32 nz_list_splice_range(nz_list *dst, nz_node *pos, nz_list *src, nz_node *firs
 */
 s32 nz_list_resize(nz_list *list, u32 size, void* val);
 
+/*!	\fn s32 nz_list_swap(nz_list *a, nz_list *b)
+	\brief exchanges content of two lists
+	\param a first list to swap
+	\param b second list to swap
+	\return NZ_ESUCCESS on success, NZ_ENULLPTR on wrong input
+*/
+s32 nz_list_swap(nz_list *a, nz_list *b);
+
+/*!	\fn s32 nz_list_reverse(nz_list *list)
+	\brief reverses nodes order in list
+	\param list is the list to reverse
+	\return
+*/
+s32 nz_list_reverse(nz_list *list);
+
 #endif // NZ_LIST_H
