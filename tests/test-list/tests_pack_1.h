@@ -21,4 +21,7 @@ s32 test_4(nz_list *list);
 // nz_list_splice test
 s32 test_5(nz_list *list);
 
+// nz_list_resize test
+s32 test_6(nz_list *list);
+
 #endif //  TESTS_PACK_1_H

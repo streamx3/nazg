@@ -2,7 +2,8 @@
 
 /******************************************************************************/
 
-void __show_list_ptrs(nz_list *list){
+void __show_list_ptrs(nz_list *list)
+{
 	NZ_LOG("list = %p", list);
 	NZ_LOG("list->begin = %p", list->begin);
 	NZ_LOG("list->rbegin = %p", list->rbegin);
@@ -22,7 +23,8 @@ void __show_list_ptrs(nz_list *list){
 
 /******************************************************************************/
 
-s32 __nz_list_size_reset( nz_list *list ){
+s32 __nz_list_size_reset( nz_list *list )
+{
 	s32 retval;
 	u32 real_size;
 	nz_node *node;
@@ -59,7 +61,8 @@ DESCRIPTION
 */
 
 s32 __nz_list_splice_internal( nz_list *dst, nz_list *src, nz_node *pd1,
-								  nz_node *ps1, nz_node *ps2 ){
+								  nz_node *ps1, nz_node *ps2 )
+{
 
 /**** Check if incoming source list pointers are usable. ****/
 #define __NZ_LSI_PTRCHK(l,p1,p2) \
@@ -122,7 +125,8 @@ __nz_list_splice_internal_out:;
 
 /******************************************************************************/
 
-void __nz_node_push_to_empty_list( nz_list *list, nz_node *node ){
+void __nz_node_push_to_empty_list( nz_list *list, nz_node *node )
+{
 	node->next = list->end;
 	node->prev = list->rend;
 
@@ -143,7 +147,8 @@ void __nz_node_push_to_empty_list( nz_list *list, nz_node *node ){
 	STATE AFTER
 	a <--> b <--> c
 */
-void __nz_node_bind_new_neigh( nz_node *a, nz_node *b, nz_node *c){
+void __nz_node_bind_new_neigh( nz_node *a, nz_node *b, nz_node *c)
+{
 	a->next = b;
 	b->prev = a;
 
@@ -153,7 +158,8 @@ void __nz_node_bind_new_neigh( nz_node *a, nz_node *b, nz_node *c){
 
 /******************************************************************************/
 
-s32 nz_list_init(nz_list *list){
+s32 nz_list_init(nz_list *list)
+{
 	nz_node *sentinel_first, *sentinel_last;
 	s32 retval;
 
@@ -190,7 +196,8 @@ nz_list_init_free_sentfrst:;
 
 /******************************************************************************/
 
-s32 nz_list_exit( nz_list *list ){
+s32 nz_list_exit( nz_list *list )
+{
 	s32 retval;
 
 	retval = NZ_ESUCCESS;
@@ -290,7 +297,8 @@ nz_list_pop_front_out:;
 
 /******************************************************************************/
 
-s32 nz_list_push_back( nz_list *list, void *data ){
+s32 nz_list_push_back( nz_list *list, void *data )
+{
 	nz_node *node;
 	s32 retval, errh;
 
@@ -322,7 +330,8 @@ nz_list_push_back_out:;
 
 /******************************************************************************/
 
-s32 nz_list_push_front( nz_list *list, void *data ){
+s32 nz_list_push_front( nz_list *list, void *data )
+{
 	nz_node *node;
 	s32 retval, errh;
 
@@ -354,7 +363,8 @@ nz_list_push_back_out:;
 
 /******************************************************************************/
 
-s32 nz_list_remove_by_iter( nz_list *list, nz_node *aim ){
+s32 nz_list_remove_by_iter( nz_list *list, nz_node *aim )
+{
 	s32 retval;
 	nz_node *node;
 
@@ -390,7 +400,8 @@ nz_list_remove_by_iter_out:;
 
 /******************************************************************************/
 
-s32 nz_list_set_node_destructor(nz_list *list, nz_destructor_t destructor){
+s32 nz_list_set_node_destructor(nz_list *list, nz_destructor_t destructor)
+{
 	s32 retval;
 	retval = NZ_ESUCCESS;
 
@@ -405,7 +416,8 @@ nz_list_set_node_destructor_out:;
 
 /******************************************************************************/
 
-s32 nz_list_empty(nz_list *list){
+s32 nz_list_empty(nz_list *list)
+{
 	if(list == NULL){
 		return -NZ_ENULLPTR;
 	}
@@ -423,7 +435,8 @@ s32 nz_list_empty(nz_list *list){
 
 /******************************************************************************/
 
-s32 nz_list_clear(nz_list *list){
+s32 nz_list_clear(nz_list *list)
+{
 	s32 retval;
 
 	retval = NZ_ESUCCESS;

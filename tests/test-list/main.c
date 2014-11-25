@@ -15,6 +15,10 @@ int main(int argc, char* argv[]){
 	NZ_ASSERT(errh == NZ_ESUCCESS, "TEST 3");
 	test_4(&list1);
 	NZ_ASSERT(errh == NZ_ESUCCESS, "TEST 4");
+	test_5(&list1);
+	NZ_ASSERT(errh == NZ_ESUCCESS, "TEST 5");
+	test_6(&list1);
+	NZ_ASSERT(errh == NZ_ESUCCESS, "TEST 6");
 
 	return 0;
 }

@@ -49,9 +49,9 @@ s32 test_1(nz_list *list)
 
 s32 test_2(nz_list *list)
 {
+#define sz6_2_1 10
 	s32 errh,i;
-#define size 10
-	s32 data[size] = {10,11,12,13,14,15,16,17,18,19};
+	s32 data[sz6_2_1] = {10,11,12,13,14,15,16,17,18,19};
 
 	NZ_ASSERT(list != NULL, "T2: Icomming data");
 
@@ -59,13 +59,13 @@ s32 test_2(nz_list *list)
 
 	show_list_s32(list);
 
-	for(i = 0; i < 10; ++i){
+	for(i = 0; i < sz6_2_1; ++i){
 		NZ_LOG("i = %d;",i);
 		nz_list_push_back(list, &(data[i]));
 	}
 	show_list_s32(list);
 
-	errh = listverify_s32(list, data, size);
+	errh = listverify_s32(list, data, sz6_2_1);
 	NZ_ASSERT(errh == NZ_ESUCCESS, "list_verify 1");
 
 	errh = nz_list_pop_back(list);
@@ -76,7 +76,7 @@ s32 test_2(nz_list *list)
 	NZ_ASSERT(errh == NZ_ESUCCESS, "pop_back_3");
 
 
-	errh = listverify_s32(list, data, size-3);
+	errh = listverify_s32(list, data, sz6_2_1-3);
 	NZ_ASSERT(errh == NZ_ESUCCESS, "list_verify 2");
 
 	show_list_s32(list);
@@ -233,6 +233,66 @@ s32 test_5(nz_list *list)
 	NZ_ASRT_DUMB("list exit incomming");
 	errh = nz_list_exit(&spll);
 	NZ_ASRT_DUMB("list exit local");
+
+	return errh;
+}
+
+s32 test_6(nz_list *list)
+{
+#define sz6_1 3
+#define sz6_2 1
+#define sz6_3 4
+	s32 errh;
+	s32 d1[sz6_1] = {60,61,62};
+	s32 d2[sz6_2] = {60};
+
+	NZ_ASSERT(list != NULL, "T6: Incomming data");
+
+	nz_list_init(list);
+	nz_list_push_back(list, &(d1[0]));
+	nz_list_push_back(list, &(d1[1]));
+	nz_list_push_back(list, &(d1[2]));
+
+	errh = listverify_s32(list, d1, sz6_1);
+	NZ_ASRT_DUMB("T6: Verification of ininitial state");
+
+	errh = nz_list_resize(list, (u32)sz6_2, NULL);
+	NZ_ASRT_DUMB("T6: resizing size to smaller");
+
+	errh = nz_list_resize(list, (u32)sz6_2, NULL);
+	NZ_ASRT_DUMB("T6: resizing size to same");
+
+	errh = listverify_s32(list, d2, sz6_2);
+	NZ_ASRT_DUMB("T6: Verification of srinked list");
+
+	errh = nz_list_resize(list, (u32)sz6_3, NULL);
+	NZ_ASRT_DUMB("T6: resizing list to biger");
+
+	if(list->size == 4 &&
+	   list->begin->data == &(d1[0]) &&
+	   list->begin->next->data == NULL &&
+	   list->begin->next->next->data == NULL &&
+	   list->begin->next->next->next->data == NULL &&
+	   list->begin->next->next->next == list->rbegin ){
+		errh = NZ_ESUCCESS;
+	}else{
+		errh = NZ_EINVALID;
+	}
+	NZ_ASRT_DUMB("T6: Verification of increased list");
+
+	errh = nz_list_resize(list, 0, NULL);
+	NZ_ASRT_DUMB("T6: resizing list to zero");
+	if(list->size == 0 &&
+	   list->begin == list->end &&
+	   list->rbegin == list->rend){
+		errh = NZ_ESUCCESS;
+	}else{
+		errh = NZ_EINVALID;
+	}
+	NZ_ASRT_DUMB("T6: Verification of list resized to zero");
+
+	errh = nz_list_exit(list);
+	NZ_ASRT_DUMB("T6: incomming exit");
 
 	return errh;
 }
