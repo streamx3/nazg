@@ -22,5 +22,10 @@ do{ \
 	} \
 }while(0)
 
+#define NZ_ASRTCND(cond) \
+do{ \
+	NZ_ASSERT(cond, #cond);\
+}while(0)
+
 
 #endif // NZ_ASSERT_H
