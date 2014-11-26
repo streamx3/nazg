@@ -2,6 +2,40 @@
 
 /******************************************************************************/
 
+u32 __nz_list_vrfsz(nz_list *list)
+{
+	u32 size;
+	nz_node *it;
+
+	size = 0;
+	if(list == NULL || list->begin == NULL || list->end == NULL)
+		return size;
+	for(it = list->begin; it != NULL && it != list->end; ++it, ++size);
+	return size;
+}
+
+/******************************************************************************/
+
+s32 __nz_list_vrfptrs(nz_list *list, nz_error *err)
+{
+	s32 retval;
+
+	if(list == NULL)
+		return NZ_ENULLPTR;
+
+
+	return retval;
+}
+
+/******************************************************************************/
+
+s32 __nz_list_vrf(nz_list *list)
+{
+
+}
+
+/******************************************************************************/
+
 void __nz_ptrswap( void **a, void **b)
 {
 	void *c;
@@ -213,8 +247,9 @@ s32 nz_list_exit( nz_list *list )
 	retval = NZ_ESUCCESS;
 	__NZ_CHKNULLPTR_JMP( list, retval, nz_list_exit_out );
 
-	for( ; list->begin != NULL && list->begin != list->end;
-		 nz_list_pop_front( list ) ); //TODO Bug loop here
+	retval = nz_list_clear(list);
+	if(retval)
+		return retval;
 
 	if( list->begin  != NULL && list->begin  == list->end &&
 		list->rbegin != NULL && list->rbegin == list->rend &&
@@ -394,9 +429,9 @@ s32 nz_list_remove_by_iter( nz_list *list, nz_node *aim )
 		return nz_list_pop_back( list );
 
 	for( node = list->begin;
-		 node->next != aim && node != list->end && node != NULL;
+		 node != NULL && node->next != aim && node != list->end ;
 		 node = node->next );
-	if( node->next == aim ){
+	if( node &&  node->next == aim ){
 		node->next = node->next->next;
 		node->next->prev = node;
 		__NZ_CALL_NODE_DESTRUCTOR( list, aim );
@@ -506,8 +541,7 @@ nz_list_splice_range_out:;
 
 s32 nz_list_resize(nz_list *list, u32 size, void* val)
 {
-	s32 retval, errh;
-	u32 i;
+	s32 retval;
 
 	retval = NZ_ESUCCESS;
 	__NZ_CHKNULLPTR_JMP(list,retval,nz_list_resize_out);
@@ -515,11 +549,11 @@ s32 nz_list_resize(nz_list *list, u32 size, void* val)
 	if(size == list->size){
 		return retval;
 	}
-	while(errh == NZ_ESUCCESS && size < list->size){
-		errh = nz_list_pop_back(list);
+	while(retval == NZ_ESUCCESS && size < list->size){
+		retval = nz_list_pop_back(list);
 	}
-	while(errh == NZ_ESUCCESS && size > list->size){
-		errh = nz_list_push_back(list,val);
+	while(retval == NZ_ESUCCESS && size > list->size){
+		retval = nz_list_push_back(list,val);
 	}
 
 nz_list_resize_out:;
@@ -558,8 +592,8 @@ s32 nz_list_reverse(nz_list *list) {
 	nz_node *it;
 	nz_list l2; // Buffer list
 
-	__NZ_CHKNULLPTR_JMP(list, retval, nz_list_reverse_out);
 	retval = NZ_ESUCCESS;
+	__NZ_CHKNULLPTR_JMP(list, retval, nz_list_reverse_out);
 
 	l2.begin = list->rbegin;
 	l2.rbegin = list->begin;

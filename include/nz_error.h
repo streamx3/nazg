@@ -3,6 +3,8 @@
 
 #include "nz_int.h"
 
+#define NZ_ERR_BUFSZ 512
+
 /*! NAZG Error codes */
 #define NZ_ESUCCESS		0
 #define NZ_EUNKNOWN		1
@@ -21,5 +23,9 @@ struct nz_error{
 	u32 errstrlen;
 	char *errstr;
 };
+
+s32 nz_err(nz_error *error, char *fmt, ...);
+
+s32 nz_err_free(nz_error *error);
 
 #endif // NZ_ERROR_H

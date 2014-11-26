@@ -7,7 +7,7 @@ do{ \
 			(cond) ? BOLDGREEN "SUCCESS" : BOLDRED "FAILURE", \
 			##__VA_ARGS__); \
 	if(!(cond)){ \
-		return 1; \
+		exit(1); \
 	} \
 }while(0)
 
@@ -18,7 +18,7 @@ do{ \
 			(errh == NZ_ESUCCESS) ? BOLDGREEN "SUCCESS" : BOLDRED "FAILURE", \
 			##__VA_ARGS__); \
 	if(errh != NZ_ESUCCESS){ \
-		return 1; \
+		exit(1); \
 	} \
 }while(0)
 

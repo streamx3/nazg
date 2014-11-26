@@ -13,7 +13,8 @@ set(LIB_HEADER	${HDR_PREFIX}nazg.h
 				${HDR_PREFIX}nz_list.h
 				${HDR_PREFIX}nz_space.h)
 
-set(LIB_SOURCE nz_list.c)
+set(LIB_SOURCE	nz_list.c
+				nz_error.c)
 
 add_library(nazg SHARED	${LIB_HEADER}
 						${LIB_SOURCE})

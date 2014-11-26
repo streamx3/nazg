@@ -186,14 +186,23 @@ s32 test_5(nz_list *list)
 	// Primer to dest
 	errh = nz_list_push_back(list, &(data[0]));
 	NZ_ASRT_DUMB("d[0]->dst");
+	NZ_ASRTCND(list->size == 1);
+	NZ_ASRTCND(list->begin == list->rbegin);
+	NZ_ASRTCND(list->begin != list->end);
+	NZ_ASRTCND(list->rbegin != list->rend);
 
 	// Portion of data to splicing-buffer list
 	errh = nz_list_push_back(&spll,&(data[1]));
-	NZ_ASRT_DUMB("d[1]->dst");
+	NZ_ASRT_DUMB("d[1]->src");
+	NZ_ASRTCND(spll.size == 1);
+	NZ_ASRTCND(spll.begin == spll.rbegin);
+	NZ_ASRTCND(spll.begin != spll.end);
+	NZ_ASRTCND(spll.rbegin != spll.rend);
+
 	errh = nz_list_push_back(&spll,&(data[2]));
-	NZ_ASRT_DUMB("d[2]->dst");
+	NZ_ASRT_DUMB("d[2]->src");
 	errh = nz_list_push_back(&spll,&(data[3]));
-	NZ_ASRT_DUMB("d[3]->dst");
+	NZ_ASRT_DUMB("d[3]->src");
 
 	// Test 5.1
 	errh = nz_list_splice(list,list->begin,&spll);
@@ -203,17 +212,18 @@ s32 test_5(nz_list *list)
 
 	// Another portion of data to splicing-buffer list
 	errh = nz_list_push_back(&spll,&(data[4]));
-	NZ_ASRT_DUMB("d[4]->dst");
+	NZ_ASRT_DUMB("d[4]->src");
 	errh = nz_list_push_back(&spll,&(data[5]));
-	NZ_ASRT_DUMB("d[5]->dst");
+	NZ_ASRT_DUMB("d[5]->src");
 	errh = nz_list_push_back(&spll,&(data[6]));
-	NZ_ASRT_DUMB("d[6]->dst");
+	NZ_ASRT_DUMB("d[6]->src");
 
 	// Test 5.2
 	errh = nz_list_splice(list,list->end,&spll);
 	NZ_ASRT_DUMB("simple splicing to end of dest list");
 	errh = listverify_s32(list,stg2,stg2sz);
 	NZ_ASRT_DUMB("T5: verification 2");
+	NZ_ASRTCND( list->size == stg2sz );
 
 	// Another portion of data to splicing-buffer list
 	errh = nz_list_push_back(&spll,&(data[7]));
