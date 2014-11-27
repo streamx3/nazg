@@ -1,3 +1,4 @@
+#include <error.h>
 #include "nz_common.h"
 
 s32 nz_err(nz_error *error, char *fmt, ...)
@@ -20,6 +21,7 @@ s32 nz_err(nz_error *error, char *fmt, ...)
 	if(error->errstr == NULL){
 		return NZ_ENULLPTR;
 	}
+	error->errcode = NZ_EUNKNOWN;
 	strncpy(error->errstr,buffer,written);
 
 	return retval;
@@ -34,7 +36,6 @@ s32 nz_err_free(nz_error *error)
 		nz_free(error->errstr);
 		error->errstr = NULL;
 	}
-	nz_free(error);
 
-	return NZ_ENULLPTR;
+	return NZ_ESUCCESS;
 }

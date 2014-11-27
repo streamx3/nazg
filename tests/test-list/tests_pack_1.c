@@ -170,7 +170,7 @@ s32 test_5(nz_list *list)
 #define stg3sz 10
 
 	s32 errh;
-	s32 data[t5sz] = {501,502,503,504,505,506,507,508,509,510};
+	s32 data[t5sz]   = {501,502,503,504,505,506,507,508,509,510};
 	s32 stg1[stg1sz] = {501,502,503,504};
 	s32 stg2[stg2sz] = {501,502,503,504,505,506,507};
 	s32 stg3[stg3sz] = {501,502,503,504,508,509,510,505,506,507};
@@ -223,7 +223,7 @@ s32 test_5(nz_list *list)
 	NZ_ASRT_DUMB("simple splicing to end of dest list");
 	errh = listverify_s32(list,stg2,stg2sz);
 	NZ_ASRT_DUMB("T5: verification 2");
-	NZ_ASRTCND( list->size == stg2sz );
+	NZ_ASRTCND(list->size == stg2sz);
 
 	// Another portion of data to splicing-buffer list
 	errh = nz_list_push_back(&spll,&(data[7]));
