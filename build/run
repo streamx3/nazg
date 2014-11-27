@@ -1,53 +1,79 @@
-#!/bin/bash
+#!/usr/bin/env python
 
-build () {
-	echo "Buildding non-debug...."
-	cmake ..
-	make
-	make install
-}
+import os
+import sys
+from collections import defaultdict
 
-build_debug () {
-	echo "Buildding debug...."
-	cmake -DCMAKE_BUILD_TYPE=Debug ..
-	make
-	make install
-}
+dbg_str = []
+dbg_str.append([])
+dbg_str[0].append("d_gdb")
+dbg_str[0].append("gdb --silent -x ../debug/test-list.txt")
+dbg_str.append([])
+dbg_str[1].append("d_lldb")
+dbg_str[1].append("lldb ../out/bin/test-list")
 
-clean () {
-	for a in `ls | grep -v run` ; do rm -rfv $a; done
-	rm -rfv ../out
-}
+const_make_string = "make && make install"
 
-debug () {
-	gdb --silent -x ../debug/test-list.txt
-}
+def help(cmd):
+	print '\nAvailable options are:'
+	print '\tb build			-- build without debug symbols'
+	print '\tbd build_debug		-- build without debug symbols'
+	print '\th help				-- display help'
+	print '\tc clean			-- clean the build'
+	print '\td debug			-- start default debug session'
+	print '\td_gdb debug_gdb	-- start debug with GDB'
+	print '\td_lldb debug_lldb	-- start debug with LLVM Debugger'
+	print ' '
 
-wrong_option () {
-	echo "Wrong option!"
-}
+def build(cmd):
+	print "Building non-debug..."
+	os.system("cmake .. && " + const_make_string)
+	return None
 
-if [ -z "$1" ]
-then
-	echo "Error! No option given!"
-	exit 1;
-else
-	case "$1" in
-	"build" | "b" )
-		build
-		;;
-	"build_debug" | "bd" )
-		build_debug
-		;;
-	"clean" | "c" )
-		clean
-		;;
-	"gdb" | "g" )
-		debug
-		;;
-	*)
-		wrong_option
-		;;
-	esac
-fi
+def build_debug(cmd):
+	print "Building debug..."
+	os.system("cmake -DCMAKE_BUILD_TYPE=Debug .. && " + const_make_string)
+	return None
 
+def clean(cmd):
+	os.system("for a in `ls | grep -v run` ; do rm -rfv $a; done && rm -rfv ../out")
+	return None
+
+def debug(cmd):
+	if(cmd == dbg_str[1][0]):
+		os.system(dbg_str[1][1])
+	else:
+		os.system(dbg_str[0][1])
+	return None;
+
+def execute(cmd):
+	return os.system("../out/bin/test-list")
+
+def wrong_option(cmd):
+	print 'Wrong option \'' + cmd + '\'!'
+	help("ololo1")
+	exit(1)
+
+options = {'b':build,
+		   'build':build,
+		   'bd':build_debug,
+		   'build_debug':build_debug,
+		   'e':execute,
+		   'exec':execute,
+		   'h':help,
+		   'help':help,
+		   'c':clean,
+		   'clean':clean,
+		   'd':debug,
+		   'debug':debug,
+		   'd_gdb':debug,
+		   'debug_gdb':debug,
+		   'd_lldb':debug,
+		   'debug_lldb':debug
+		   }
+
+options = defaultdict(lambda:help, options)
+
+for cmd in sys.argv:
+	if cmd != sys.argv[0]:
+		options[cmd](cmd)
