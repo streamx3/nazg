@@ -1,4 +1,3 @@
-#include <error.h>
 #include "nz_common.h"
 
 s32 nz_err(nz_error *error, char *fmt, ...)
