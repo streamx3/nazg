@@ -4,17 +4,18 @@ import os
 import sys
 from collections import defaultdict
 
-dbg_str = []
-dbg_str.append([])
-dbg_str[0].append("d_gdb")
-dbg_str[0].append("gdb --silent -x ../debug/test-list.txt")
-dbg_str.append([])
-dbg_str[1].append("d_lldb")
-dbg_str[1].append("lldb ../out/bin/test-list")
-
 const_make_string = "make && make install"
+const_debug_gdb = 'gdb --silent -x ../debug/test-list.txt'
+const_debug_lldb = 'lldb ../out/bin/test-list'
 
-def help(cmd):
+debug_options = {
+    'd': const_debug_gdb,
+    'd_gdb': const_debug_gdb,
+    'd_lldb': const_debug_lldb
+}
+debug_options = defaultdict(lambda: const_debug_gdb, debug_options)
+
+def fn_help(cmd):
 	print '\nAvailable options are:'
 	print '\tb build			-- build without debug symbols'
 	print '\tbd build_debug		-- build without debug symbols'
@@ -25,54 +26,58 @@ def help(cmd):
 	print '\td_lldb debug_lldb	-- start debug with LLVM Debugger'
 	print ' '
 
+
 def build(cmd):
 	print "Building non-debug..."
 	os.system("cmake .. && " + const_make_string)
 	return None
+
 
 def build_debug(cmd):
 	print "Building debug..."
 	os.system("cmake -DCMAKE_BUILD_TYPE=Debug .. && " + const_make_string)
 	return None
 
+
 def clean(cmd):
 	os.system("for a in `ls | grep -v run` ; do rm -rfv $a; done && rm -rfv ../out")
 	return None
 
+
 def debug(cmd):
-	if(cmd == dbg_str[1][0]):
-		os.system(dbg_str[1][1])
-	else:
-		os.system(dbg_str[0][1])
-	return None;
+	os.system(debug_options[cmd])
+	return None
+
 
 def execute(cmd):
 	return os.system("../out/bin/test-list")
 
+
 def wrong_option(cmd):
 	print 'Wrong option \'' + cmd + '\'!'
-	help("ololo1")
+	fn_help("ololo1")
 	exit(1)
 
-options = {'b':build,
-		   'build':build,
-		   'bd':build_debug,
-		   'build_debug':build_debug,
-		   'e':execute,
-		   'exec':execute,
-		   'h':help,
-		   'help':help,
-		   'c':clean,
-		   'clean':clean,
-		   'd':debug,
-		   'debug':debug,
-		   'd_gdb':debug,
-		   'debug_gdb':debug,
-		   'd_lldb':debug,
-		   'debug_lldb':debug
-		   }
 
-options = defaultdict(lambda:help, options)
+options = {'b': build,
+		   'build': build,
+		   'bd': build_debug,
+		   'build_debug': build_debug,
+		   'e': execute,
+		   'exec': execute,
+		   'h': fn_help,
+		   'help': fn_help,
+		   'c': clean,
+		   'clean': clean,
+		   'd': debug,
+		   'debug': debug,
+		   'd_gdb': debug,
+		   'debug_gdb': debug,
+		   'd_lldb': debug,
+		   'debug_lldb': debug
+}
+
+options = defaultdict(lambda: wrong_option, options)
 
 for cmd in sys.argv:
 	if cmd != sys.argv[0]:
