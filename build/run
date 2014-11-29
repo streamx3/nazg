@@ -2,18 +2,34 @@
 
 import os
 import sys
+
 from collections import defaultdict
+from sys import platform as _platform
+
+libexport_str = ""
 
 const_make_string = "make && make install"
 const_debug_gdb = 'gdb --silent -x ../debug/test-list.txt'
 const_debug_lldb = 'lldb ../out/bin/test-list'
 
 debug_options = {
-    'd': const_debug_gdb,
-    'd_gdb': const_debug_gdb,
-    'd_lldb': const_debug_lldb
+	'd': const_debug_gdb,
+	'd_gdb': const_debug_gdb,
+	'd_lldb': const_debug_lldb
 }
 debug_options = defaultdict(lambda: const_debug_gdb, debug_options)
+
+if _platform == "linux" or _platform == "linux2":
+	# Linux
+	libexport_str = "export LD_LIBRARY_PATH="
+elif _platform == "darwin":
+	# OS X
+	libexport_str = "export DYLD_LIBRARY_PATH="
+elif _platform == "win32":
+	# Windows...
+	libexport_str = "shutdown \s || ; "
+
+libexport_str+="../out/lib/ && "
 
 def fn_help(cmd):
 	print '\nAvailable options are:'
@@ -45,12 +61,12 @@ def clean(cmd):
 
 
 def debug(cmd):
-	os.system(debug_options[cmd])
+	os.system( libexport_str + debug_options[cmd])
 	return None
 
 
 def execute(cmd):
-	return os.system("../out/bin/test-list")
+	return os.system(libexport_str +"../out/bin/test-list")
 
 
 def wrong_option(cmd):
