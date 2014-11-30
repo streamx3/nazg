@@ -10,7 +10,7 @@ libexport_str = ""
 
 const_make_string = "make && make install"
 const_debug_gdb = 'gdb --silent -x ../debug/test-list.txt'
-const_debug_lldb = 'lldb ../out/bin/test-list'
+const_debug_lldb = 'lldb --source ../debug/test-list-lldb.txt'
 
 debug_options = {
 	'd': const_debug_gdb,
@@ -61,12 +61,12 @@ def clean(cmd):
 
 
 def debug(cmd):
-	os.system( libexport_str + debug_options[cmd])
+	os.system(libexport_str + debug_options[cmd])
 	return None
 
 
 def execute(cmd):
-	return os.system(libexport_str +"../out/bin/test-list")
+	return os.system(libexport_str + "../out/bin/test-list")
 
 
 def wrong_option(cmd):
