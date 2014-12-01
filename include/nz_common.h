@@ -58,34 +58,39 @@
 
 #ifdef NZ_USERSPACE
 
-#define NZ_LOG(fmt, ...) \
-do{\
-	printf( "[" GREEN "NZ L" RESET "][%s][%d][%s]" fmt "\n", \
-	__FILE__, __LINE__, __FUNCTION__, ##__VA_ARGS__ ); \
-}while(0)
-
-#define NZ_ERR(fmt, ...) \
-do{\
-	printf( "[" RED "NZ E" RESET "][%s][%d][%s]" fmt "\n", \
-	__FILE__, __LINE__, __FUNCTION__, ##__VA_ARGS__ ); \
+nz_print(FMT, ...) \
+do{ \
+	printf(FMT, ##__VA_ARGS__); \
 }while(0)
 
 #else
 
+nz_print(FMT, ...) \
+do{ \
+	printk(FMT, ##__VA_ARGS__); \
+}while(0)
+
+#endif
+
+
+#define NZ_COUT(LEVEL, FMT, ...) \
+do{ \
+	nz_print() \
+}while(0)
+
+
 #define NZ_LOG(fmt, ...) \
 do{\
-	printk(KERN_NOTICE"[" GREEN "NZ L" RESET "][%s][%d][%s]" fmt "\n", \
+	nz_print(NZ_LVL_NOTICE"[" GREEN "NZ L" RESET "][%s][%d][%s]" fmt "\n", \
 	__FILE__, __LINE__, __FUNCTION__, ##__VA_ARGS__ ); \
 }while(0)
 
 #define NZ_ERR(fmt, ...) \
 do{\
-	printk(KERN_ERR"[" RED "NZ E" RESET "][%s][%d][%s]" fmt "\n", \
+	nz_print(NZ_LVL_ERR"[" RED "NZ E" RESET "][%s][%d][%s]" fmt "\n", \
 	__FILE__, __LINE__, __FUNCTION__, ##__VA_ARGS__ ); \
 }while(0)
 
-
-#endif
 
 /*** Types ********************************************************************/
 

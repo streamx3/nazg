@@ -2,6 +2,8 @@
 #define NZ_ERROR_H
 
 #include "nz_int.h"
+#include "nz_space.h"
+#include "nz_levels.h"
 
 #define NZ_ERR_BUFSZ 512
 
@@ -14,6 +16,7 @@
 #define NZ_EEXISTS		5
 #define NZ_EINVALID		6
 
+
 /*!
 	\brief Structure for heavy self-diagnostic
 */
@@ -24,7 +27,11 @@ struct nz_error{
 	char *errstr;
 };
 
-s32 nz_err(nz_error *error, char *fmt, ...);
+s32 nz_err_init(nz_error *error);
+
+s32 nz_err_write(nz_error *error, s32 errcode, char *fmt, ...);
+
+s32 nz_err_print(nz_error *error);
 
 s32 nz_err_free(nz_error *error);
 

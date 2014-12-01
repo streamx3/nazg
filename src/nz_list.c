@@ -25,11 +25,37 @@ s32 __nz_list_vrfptrs(nz_list *list, nz_error *err)
 {
 	s32 retval;
 
+	retval = NZ_ESUCCESS;
 	if(list == NULL)
 		return NZ_ENULLPTR;
 	if(err != NULL && err->errcode != NZ_ESUCCESS){
 		return err->errcode;
 	}
+	// TODO Check sentinels
+
+/* There are 3 major states based on size amount of data in list:
+ * 1) empty list
+ * 2) list with single item
+ * 3) list with more than one item
+ */
+
+	if(list->size == 0){
+	// Case 1
+		if(list->begin != list->end || list->rbegin != list->rend ||
+			list->begin->next != list->rbegin ||
+			list->rbegin->prev != list->begin ){
+			// TODO nz_error here
+			return retval
+		}
+	}else if(list->size == 1){
+		//Case 2
+		if(list->begin == list->end || list->rbegin == list->rend || ){
+
+		}
+	}else{
+		//Case 3
+	}
+
 	// TODO Continue here
 
 	return retval;
