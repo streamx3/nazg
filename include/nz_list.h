@@ -157,9 +157,9 @@ s32 nz_list_reverse(nz_list *list);
 /*!	\brief checks for list actual size
 	\return 0 if list == NULL  or actual size of the list otherwise
  */
-u32 __nz_list_vrfsz(nz_list *list);
+u32 __nz_list_vrfsz(nz_list *list, nz_error *err);
 
 s32 __nz_list_vrfptrs(nz_list *list, nz_error *err);
-s32 __nz_list_vrf(nz_list *list);
+s32 __nz_list_vrf(nz_list *list, nz_error *err);
 
 #endif // NZ_LIST_H
