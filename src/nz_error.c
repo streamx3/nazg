@@ -8,7 +8,7 @@ do{ \
 	} \
 }while(0)
 
-s32 nz_err_init(nz_error *error)
+s32 nz_error_init(nz_error *error)
 {
 	s32 retval;
 	retval = NZ_ESUCCESS;
@@ -22,7 +22,7 @@ s32 nz_err_init(nz_error *error)
 	return retval;
 }
 
-s32 nz_err_write(nz_error *error, s32 errcode, char *fmt, ...)
+s32 nz_error_write(nz_error *error, s32 errcode, char *fmt, ...)
 {
 	va_list arg;
 	s32 retval, written;
@@ -52,7 +52,7 @@ s32 nz_err_write(nz_error *error, s32 errcode, char *fmt, ...)
 	return retval;
 }
 
-s32 nz_err_print(nz_error *error)
+s32 nz_error_print(nz_error *error)
 {
 	s32 retval;
 	retval = NZ_ESUCCESS;
@@ -62,7 +62,7 @@ s32 nz_err_print(nz_error *error)
 	}
 	if(error->errcode == NZ_ESUCCESS){
 		if(error->errstr == NULL){
-			
+
 		}
 	}
 
@@ -70,7 +70,7 @@ s32 nz_err_print(nz_error *error)
 	return retval;
 }
 
-s32 nz_err_free(nz_error *error)
+s32 nz_error_free(nz_error *error)
 {
 	if(error == NULL)
 		return NZ_ENULLPTR;

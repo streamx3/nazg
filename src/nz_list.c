@@ -31,7 +31,18 @@ s32 __nz_list_vrfptrs(nz_list *list, nz_error *err)
 	if(err != NULL && err->errcode != NZ_ESUCCESS){
 		return err->errcode;
 	}
-	// TODO Check sentinels
+	if(list->end->next != NULL || list->rend->prev != NULL){
+		retval = NZ_EINVALID;
+		nz_error_write(err, retval, "Dead-ends invalid [%p]<->[%p];",
+					list->end->next, list->rend->prev);
+		return retval;
+	}
+	if(list->end->data != NULL || list->rend->data != NULL){
+		retval = NZ_EINVALID;
+		nz_error_write(err, retval, "Sentinels invalid [%p]<->[%p];",
+					list->end->data, list->rend->data);
+		return retval;
+	}
 
 /* There are 3 major states based on size amount of data in list:
  * 1) empty list
@@ -40,20 +51,47 @@ s32 __nz_list_vrfptrs(nz_list *list, nz_error *err)
  */
 
 	if(list->size == 0){
-	// Case 1
+		// Case 1
 		if(list->begin != list->end || list->rbegin != list->rend ||
 			list->begin->next != list->rbegin ||
 			list->rbegin->prev != list->begin ){
-			// TODO nz_error here
-			return retval
+
+			retval = NZ_EINVALID;
+			nz_error_write(
+				err, retval, "Empty list ptrerr: begin[%p],end[%p],"
+				"rbegin[%p],rend[%p],"
+				"begin.next[%p],begin.prev[%p],end.next[%p],end.prev[%p];",
+				list->begin, list->end, list->rbegin, list->rend,
+				list->begin->next, list->begin->prev,
+				list->end->next, list->end->prev);
+			return retval;
 		}
 	}else if(list->size == 1){
 		//Case 2
-		if(list->begin == list->end || list->rbegin == list->rend || ){
+		if(list->begin == list->end || list->rbegin == list->rend ||
+		   list->begin != list->rbegin ||
+		   list->begin->next != list->end ||
+		   list->begin != list->end->prev ||
+		   list->rbegin->prev != list->rend ||
+		   list->rbegin != list->rend->next){
 
+			retval = NZ_EINVALID;
+			nz_error_write(err, retval, "List with simgle data item invalid:"
+				"begin[%p], end[%p], rbegin[%p], rend[%p],"
+				"begin.next[%p], begin.prev[%p],"
+				"end.prev[%p], end.next[%p],"
+				"rend.prev[%p], rend.next[%p];",
+				list->begin, list->end, list->rbegin, list->rend,
+				list->begin->next, list->begin->prev,
+				list->end->prev, list->end->next,
+				list->rend->prev, list->rend->next);
+			return retval;
 		}
 	}else{
-		//Case 3
+		if(0){
+			retval = NZ_EINVALID;
+			return retval;
+		}
 	}
 
 	// TODO Continue here

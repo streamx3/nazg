@@ -16,5 +16,4 @@
 #define nz_free(x)		vfree(x)
 #endif
 
-
 #endif // NZ_MEMORY_H

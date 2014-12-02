@@ -27,12 +27,12 @@ struct nz_error{
 	char *errstr;
 };
 
-s32 nz_err_init(nz_error *error);
+s32 nz_error_init(nz_error *error);
 
-s32 nz_err_write(nz_error *error, s32 errcode, char *fmt, ...);
+s32 nz_error_write(nz_error *error, s32 errcode, char *fmt, ...);
 
-s32 nz_err_print(nz_error *error);
+s32 nz_error_print(nz_error *error);
 
-s32 nz_err_free(nz_error *error);
+s32 nz_error_free(nz_error *error);
 
 #endif // NZ_ERROR_H

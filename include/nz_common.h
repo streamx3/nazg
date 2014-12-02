@@ -58,14 +58,14 @@
 
 #ifdef NZ_USERSPACE
 
-nz_print(FMT, ...) \
+#define nz_print(FMT, ...) \
 do{ \
 	printf(FMT, ##__VA_ARGS__); \
 }while(0)
 
 #else
 
-nz_print(FMT, ...) \
+#define nz_print(FMT, ...) \
 do{ \
 	printk(FMT, ##__VA_ARGS__); \
 }while(0)
@@ -73,10 +73,12 @@ do{ \
 #endif
 
 
+/*
 #define NZ_COUT(LEVEL, FMT, ...) \
 do{ \
 	nz_print() \
 }while(0)
+*/
 
 
 #define NZ_LOG(fmt, ...) \
