@@ -8,6 +8,16 @@ do{ \
 	} \
 }while(0)
 
+const char *nz_error_strings[] = {
+	"NZ_ESUCCESS",
+	"NZ_EUNKNOWN",
+	"NZ_ENULLPTR",
+	"NZ_ENOMEM",
+	"NZ_ENOTFOUND",
+	"NZ_EEXISTS",
+	"NZ_EINVALID"
+};
+
 s32 nz_error_init(nz_error *error)
 {
 	s32 retval;
@@ -62,12 +72,20 @@ s32 nz_error_print(nz_error *error)
 	}
 	if(error->errcode == NZ_ESUCCESS){
 		if(error->errstr == NULL){
-
+			// nz_print(NZ_LVL_ERR "%s\n");
 		}
 	}
 
 
 	return retval;
+}
+
+char* nz_errstr(s32 error_code){
+	if(error_code < 0)
+		error_code = ~ error_code;
+	if(error_code < sizeof(nz_error_strings))
+		return nz_error_strings[error_code];
+	return NULL;
 }
 
 s32 nz_error_free(nz_error *error)
