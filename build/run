@@ -75,6 +75,11 @@ def wrong_option(cmd):
 	exit(1)
 
 
+def doxygen(cmd):
+	print 'doxygen(): I\'m not implemented!'
+	return None
+
+
 options = {'b': build,
 		   'build': build,
 		   'bd': build_debug,
@@ -90,7 +95,9 @@ options = {'b': build,
 		   'd_gdb': debug,
 		   'debug_gdb': debug,
 		   'd_lldb': debug,
-		   'debug_lldb': debug
+		   'debug_lldb': debug,
+		   'doc':doxygen,
+		   'doxygen':doxygen
 }
 
 options = defaultdict(lambda: wrong_option, options)

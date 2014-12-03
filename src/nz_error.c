@@ -1,5 +1,7 @@
 #include "nz_common.h"
 
+/******************************************************************************/
+
 #define __nz_errstr_try_flush(error) \
 do{ \
 	if(error->errstr){ \
@@ -7,6 +9,8 @@ do{ \
 		error->errstr = NULL; \
 	} \
 }while(0)
+
+/******************************************************************************/
 
 const char *nz_error_strings[] = {
 	"NZ_ESUCCESS",
@@ -19,6 +23,8 @@ const char *nz_error_strings[] = {
 };
 
 const char *nz_error_str_na = "N/A";
+
+/******************************************************************************/
 
 s32 nz_error_init(nz_error *error)
 {
@@ -33,6 +39,8 @@ s32 nz_error_init(nz_error *error)
 
 	return retval;
 }
+
+/******************************************************************************/
 
 s32 nz_error_write(nz_error *error, s32 errcode, char *fmt, ...)
 {
@@ -63,6 +71,8 @@ s32 nz_error_write(nz_error *error, s32 errcode, char *fmt, ...)
 	return retval;
 }
 
+/******************************************************************************/
+
 s32 nz_error_print(nz_error *error)
 {
 	const char *errcodestr, *errstring;
@@ -86,7 +96,10 @@ s32 nz_error_print(nz_error *error)
 	return retval;
 }
 
-const char* nz_errstr(s32 error_code){
+/******************************************************************************/
+
+const char* nz_errstr(s32 error_code)
+{
 	if(error_code < 0)
 		error_code = ~ error_code;
 	if(error_code < sizeof(nz_error_strings))
