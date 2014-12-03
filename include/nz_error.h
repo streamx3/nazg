@@ -17,6 +17,7 @@
 #define NZ_EINVALID		6
 
 extern const char *nz_error_strings[];
+extern const char *nz_error_str_na;
 
 /*!
 	\brief Structure for heavy self-diagnostic
@@ -34,7 +35,7 @@ s32 nz_error_write(nz_error *error, s32 errcode, char *fmt, ...);
 
 s32 nz_error_print(nz_error *error);
 
-char* nz_errstr(s32 error_code);
+const char* nz_errstr(s32 error_code);
 
 s32 nz_error_free(nz_error *error);
 

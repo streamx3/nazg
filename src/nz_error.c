@@ -18,6 +18,8 @@ const char *nz_error_strings[] = {
 	"NZ_EINVALID"
 };
 
+const char *nz_error_str_na = "N/A";
+
 s32 nz_error_init(nz_error *error)
 {
 	s32 retval;
@@ -42,9 +44,8 @@ s32 nz_error_write(nz_error *error, s32 errcode, char *fmt, ...)
 	retval = NZ_ESUCCESS;
 	if(error == NULL || fmt == NULL)
 		return NZ_ENULLPTR;
-	if(error->errstr == NULL && error->errstrlen != NULL){
+	if(error->errstr == NULL && error->errstrlen == 0)
 		return NZ_EINVALID;
-	}
 
 	va_start(arg, fmt);
 	written = snprintf(buffer, (unsigned int)NZ_ERR_BUFSZ - written, fmt, arg);
@@ -64,23 +65,28 @@ s32 nz_error_write(nz_error *error, s32 errcode, char *fmt, ...)
 
 s32 nz_error_print(nz_error *error)
 {
+	const char *errcodestr, *errstring;
 	s32 retval;
+
 	retval = NZ_ESUCCESS;
 
 	if(error == NULL){
 		return NZ_ENULLPTR;
 	}
-	if(error->errcode == NZ_ESUCCESS){
-		if(error->errstr == NULL){
-			// nz_print(NZ_LVL_ERR "%s\n");
-		}
+	if(error->errstr == NULL){
+		errstring = nz_error_str_na;
 	}
-
+	errcodestr = nz_errstr(error->errcode);
+	if(errcodestr == NULL){
+		errcodestr = nz_error_str_na;
+	}
+	nz_print(error->errcode == NZ_ESUCCESS ? NZ_LVL_INFO : NZ_LVL_ERR \
+			 "[%s] %s\n", errcodestr, errstring);
 
 	return retval;
 }
 
-char* nz_errstr(s32 error_code){
+const char* nz_errstr(s32 error_code){
 	if(error_code < 0)
 		error_code = ~ error_code;
 	if(error_code < sizeof(nz_error_strings))
