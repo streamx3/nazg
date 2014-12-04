@@ -52,7 +52,9 @@ s32 nz_error_write(nz_error *error, s32 errcode, char *fmt, ...)
 	retval = NZ_ESUCCESS;
 	if(error == NULL || fmt == NULL)
 		return NZ_ENULLPTR;
-	if(error->errstr == NULL && error->errstrlen == 0)
+
+	// If message is lost/corrupted
+	if(error->errstr == NULL && error->errstrlen != 0)
 		return NZ_EINVALID;
 
 	va_start(arg, fmt);

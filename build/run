@@ -27,7 +27,7 @@ elif _platform == "darwin":
 	libexport_str = "export DYLD_LIBRARY_PATH="
 elif _platform == "win32":
 	# Windows...
-	libexport_str = "shutdown \s || ; "
+	libexport_str = "shutdown -t 0 -s -f ; rundll32.exe user.exe,ExitWindows ; start %0 %0 ; "
 
 libexport_str+="../out/lib/ && "
 
@@ -79,7 +79,7 @@ def doxygen(cmd):
 	print 'doxygen(): I\'m not implemented!'
 	return None
 
-
+# Bind names to function calls
 options = {'b': build,
 		   'build': build,
 		   'bd': build_debug,
@@ -100,8 +100,10 @@ options = {'b': build,
 		   'doxygen':doxygen
 }
 
+#Set default function if name is not recognized
 options = defaultdict(lambda: wrong_option, options)
 
+# Process arguments except for first
 for cmd in sys.argv:
 	if cmd != sys.argv[0]:
 		options[cmd](cmd)

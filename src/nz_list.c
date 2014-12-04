@@ -128,8 +128,9 @@ s32 __nz_list_vrfptrs(nz_list *list, nz_error *err)
 		it = list->rbegin;
 		while(it != NULL && it != list->rend){
 			++count;
-			it=it->prev;
+			it = it->prev;
 		}
+
 		__nz_rollchecks("[Reverse]");
 	}
 
