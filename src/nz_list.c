@@ -24,6 +24,8 @@ u32 __nz_list_vrfsz(nz_list *list, nz_error *err)
 s32 __nz_list_vrfptrs(nz_list *list, nz_error *err)
 {
 	s32 retval;
+	u32 count;
+	nz_node *it;
 
 	retval = NZ_ESUCCESS;
 	if(list == NULL)
@@ -51,11 +53,11 @@ s32 __nz_list_vrfptrs(nz_list *list, nz_error *err)
  */
 
 	if(list->size == 0){
-		// Case 1
 		if(list->begin != list->end || list->rbegin != list->rend ||
 			list->begin->next != list->rbegin ||
 			list->rbegin->prev != list->begin){
 
+			// Case 1
 			retval = NZ_EINVALID;
 			nz_error_write(
 				err, retval, "Empty list ptrerr: begin[%p],end[%p],"
@@ -64,37 +66,72 @@ s32 __nz_list_vrfptrs(nz_list *list, nz_error *err)
 				list->begin, list->end, list->rbegin, list->rend,
 				list->begin->next, list->begin->prev,
 				list->end->next, list->end->prev);
-			return retval;
 		}
-	}else if(list->size == 1){
-		//Case 2
-		if(list->begin == list->end || list->rbegin == list->rend ||
-		   list->begin != list->rbegin ||
-		   list->begin->next != list->end ||
-		   list->begin != list->end->prev ||
-		   list->rbegin->prev != list->rend ||
-		   list->rbegin != list->rend->next){
-
-			retval = NZ_EINVALID;
-			nz_error_write(err, retval, "List with simgle data item invalid:"
-				"begin[%p], end[%p], rbegin[%p], rend[%p],"
-				"begin.next[%p], begin.prev[%p],"
-				"end.prev[%p], end.next[%p],"
-				"rend.prev[%p], rend.next[%p];",
-				list->begin, list->end, list->rbegin, list->rend,
-				list->begin->next, list->begin->prev,
-				list->end->prev, list->end->next,
-				list->rend->prev, list->rend->next);
-			return retval;
-		}
-	}else{
-		if(0){
-			retval = NZ_EINVALID;
-			return retval;
-		}
+		return retval;
 	}
 
-	// TODO Continue here
+	//Case 2 or 3
+	if(list->begin == list->end || list->rbegin == list->rend ||
+	   list->begin != list->rbegin){
+		retval = NZ_EINVALID;
+		nz_error_write(err, retval, "List with simgle data item invalid:"
+			"begin[%p], end[%p], rbegin[%p], rend[%p];",
+			list->begin, list->end, list->rbegin, list->rend);
+		return retval;
+	}
+
+	if(list->size == 1 &&
+	   (list->begin->next != list->end ||
+	   list->begin != list->end->prev ||
+	   list->rbegin->prev != list->rend ||
+	   list->rbegin != list->rend->next)){
+
+		//Case 2
+		retval = NZ_EINVALID;
+		nz_error_write(err, retval, "List with simgle data item invalid:"
+			"begin[%p], end[%p], rbegin[%p], rend[%p],"
+			"begin.next[%p], begin.prev[%p],"
+			"end.prev[%p], end.next[%p],"
+			"rend.prev[%p], rend.next[%p];",
+			list->begin, list->end, list->rbegin, list->rend,
+			list->begin->next, list->begin->prev,
+			list->end->prev, list->end->next,
+			list->rend->prev, list->rend->next);
+		return retval;
+	}
+
+	if(list->size > 1){
+		count = 0;
+		it = list->begin;
+		while(it != NULL && it != list->end){
+			++count;
+			it=it->next;
+		}
+
+#define __nz_rollchecks(direction_str) \
+		do{ \
+			if(count != list->size){ \
+				retval = NZ_EINVALID; \
+				nz_error_write(err,retval,direction_str "Size mismatch;"); \
+				return retval; \
+			} \
+			if(it == NULL){ \
+				retval = NZ_EINVALID; \
+				nz_error_write(err,retval,direction_str "List unexpected termination;"); \
+				return retval; \
+			} \
+		}while(0)
+
+		__nz_rollchecks("[Direct]");
+
+		count = 0;
+		it = list->rbegin;
+		while(it != NULL && it != list->rend){
+			++count;
+			it=it->prev;
+		}
+		__nz_rollchecks("[Reverse]");
+	}
 
 	return retval;
 }

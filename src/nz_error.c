@@ -107,6 +107,8 @@ const char* nz_errstr(s32 error_code)
 	return NULL;
 }
 
+/******************************************************************************/
+
 s32 nz_error_free(nz_error *error)
 {
 	if(error == NULL)
