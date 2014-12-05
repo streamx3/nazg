@@ -12,6 +12,34 @@ do{ \
 
 /******************************************************************************/
 
+s32 __nz_error_assert(nz_error *error, s32 doexit, s32 silent)
+{
+	const char *errcodestr, *errstring;
+	s32 retval;
+
+	retval = NZ_ESUCCESS;
+
+	if(error == NULL){
+		return NZ_ENULLPTR;
+	}
+	if(error->errstr == NULL){
+		errstring = nz_error_str_na;
+	}
+	errcodestr = nz_errstr(error->errcode);
+	if(errcodestr == NULL){
+		errcodestr = nz_error_str_na;
+	}
+	if(!silent)
+		nz_print(error->errcode == NZ_ESUCCESS ? NZ_LVL_INFO : NZ_LVL_ERR \
+				 "[%s] %s\n", errcodestr, errstring);
+	if(doexit && error->errcode != NZ_ESUCCESS)
+		exit(1);
+
+	return retval;
+}
+
+/******************************************************************************/
+
 const char *nz_error_strings[] = {
 	"NZ_ESUCCESS",
 	"NZ_EUNKNOWN",
@@ -75,31 +103,6 @@ s32 nz_error_write(nz_error *error, s32 errcode, char *fmt, ...)
 
 /******************************************************************************/
 
-s32 nz_error_print(nz_error *error)
-{
-	const char *errcodestr, *errstring;
-	s32 retval;
-
-	retval = NZ_ESUCCESS;
-
-	if(error == NULL){
-		return NZ_ENULLPTR;
-	}
-	if(error->errstr == NULL){
-		errstring = nz_error_str_na;
-	}
-	errcodestr = nz_errstr(error->errcode);
-	if(errcodestr == NULL){
-		errcodestr = nz_error_str_na;
-	}
-	nz_print(error->errcode == NZ_ESUCCESS ? NZ_LVL_INFO : NZ_LVL_ERR \
-			 "[%s] %s\n", errcodestr, errstring);
-
-	return retval;
-}
-
-/******************************************************************************/
-
 const char* nz_errstr(s32 error_code)
 {
 	if(error_code < 0)
@@ -118,3 +121,5 @@ s32 nz_error_free(nz_error *error)
 	__nz_errstr_try_flush(error);
 	return NZ_ESUCCESS;
 }
+
+/******************************************************************************/

@@ -17,3 +17,9 @@ s32 test_005()
 
 	return NZ_ESUCCESS;
 }
+
+
+s32 test_006(){
+	
+	return NZ_ESUCCESS;
+}

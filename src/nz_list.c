@@ -2,25 +2,6 @@
 
 /******************************************************************************/
 
-u32 __nz_list_vrfsz(nz_list *list, nz_error *err)
-{
-	u32 size;
-	nz_node *it;
-
-	size = 0;
-	if(err != NULL){
-		if(err->errcode != NZ_ESUCCESS){
-			return 0xFFFFFFFF; // Heavily crutched
-		}
-	}
-	if(list == NULL || list->begin == NULL || list->end == NULL)
-		return size;
-	for(it = list->begin; it != NULL && it != list->end; ++it, ++size);
-	return size;
-}
-
-/******************************************************************************/
-
 s32 __nz_list_vrfptrs(nz_list *list, nz_error *err)
 {
 	s32 retval;
@@ -54,8 +35,8 @@ s32 __nz_list_vrfptrs(nz_list *list, nz_error *err)
 
 	if(list->size == 0){
 		if(list->begin != list->end || list->rbegin != list->rend ||
-			list->begin->next != list->rbegin ||
-			list->rbegin->prev != list->begin){
+			list->begin->prev != list->rbegin ||
+			list->rbegin->next != list->begin){
 
 			// Case 1
 			retval = NZ_EINVALID;
@@ -146,12 +127,9 @@ s32 __nz_list_vrf(nz_list *list, nz_error *err)
 	if(err != NULL && err->errcode != NZ_ESUCCESS){
 		return err->errcode;
 	}
-	errh = __nz_list_vrfsz(list,err);
-	if(errh != NZ_ESUCCESS)
-		return  errh;
 	errh = __nz_list_vrfptrs(list,err);
 	if(errh != NZ_ESUCCESS)
-		return  errh;
+		return errh;
 
 	return errh;
 }

@@ -2,9 +2,9 @@ file ../out/bin/test-list
 
 tb test_5
 tb test_6
-tb listverify_s32
+b nz_error_write
+b __nz_error_assert
 run
-tb 227
 b nz_list_resize
 
 

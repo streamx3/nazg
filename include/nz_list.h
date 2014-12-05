@@ -154,12 +154,12 @@ s32 nz_list_swap(nz_list *a, nz_list *b);
 */
 s32 nz_list_reverse(nz_list *list);
 
-/*!	\brief checks for list actual size
-	\return 0 if list == NULL  or actual size of the list otherwise
+/*!	\fn s32 __nz_list_vrf(nz_list *list, nz_error *err)
+	\brief checks if list is valid inside
+	\return NZ_ESUCCESS if valid, NZ_EINVAL if invalid,
+		NZ_NULLPTR if wrong list given
  */
-u32 __nz_list_vrfsz(nz_list *list, nz_error *err);
 
-s32 __nz_list_vrfptrs(nz_list *list, nz_error *err);
 s32 __nz_list_vrf(nz_list *list, nz_error *err);
 
 #endif // NZ_LIST_H

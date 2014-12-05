@@ -1,5 +1,7 @@
 #include "tests_pack_1.h"
 
+/******************************************************************************/
+
 s32 show_list_s32(nz_list *list)
 {
 	s32 retval;
@@ -14,6 +16,8 @@ s32 show_list_s32(nz_list *list)
 
 	return retval;
 }
+
+/******************************************************************************/
 
 s32 listverify_s32(nz_list *list, s32 *arr, u32 size)
 {
@@ -35,6 +39,8 @@ s32 listverify_s32(nz_list *list, s32 *arr, u32 size)
 	return NZ_ESUCCESS;
 }
 
+/******************************************************************************/
+
 s32 test_1(nz_list *list)
 {
 	s32 errh;
@@ -46,6 +52,8 @@ s32 test_1(nz_list *list)
 
 	return NZ_ESUCCESS;
 }
+
+/******************************************************************************/
 
 s32 test_2(nz_list *list)
 {
@@ -87,6 +95,8 @@ s32 test_2(nz_list *list)
 	return NZ_ESUCCESS;
 }
 
+/******************************************************************************/
+
 s32 test_3(nz_list *list)
 {
 #define t3_size 5
@@ -125,6 +135,8 @@ s32 test_3(nz_list *list)
 }
 
 
+/******************************************************************************/
+
 static void destructor_free_s32(void *data)
 {
 	if(data == NULL){
@@ -134,6 +146,8 @@ static void destructor_free_s32(void *data)
 		nz_free(data);
 	}
 }
+
+/******************************************************************************/
 
 s32 test_4(nz_list *list)
 {
@@ -162,6 +176,8 @@ s32 test_4(nz_list *list)
 	return NZ_ESUCCESS;
 }
 
+/******************************************************************************/
+
 s32 test_5(nz_list *list)
 {
 #define t5sz 10
@@ -175,13 +191,26 @@ s32 test_5(nz_list *list)
 	s32 stg2[stg2sz] = {501,502,503,504,505,506,507};
 	s32 stg3[stg3sz] = {501,502,503,504,508,509,510,505,506,507};
 	nz_list spll; //Splicing buffer list
+	nz_error err1;
+
+	errh = nz_error_init(&err1);
+	NZ_ASRT_DUMB("T5: Error struct init");
 
 	NZ_ASSERT(list != NULL, "T5: Incomming data");
 
 	errh = nz_list_init(list);
 	NZ_ASRT_DUMB("list init incomming");
+
 	errh = nz_list_init(&spll);
 	NZ_ASRT_DUMB("list init local");
+
+	errh = __nz_list_vrf(list,&err1);
+	NZ_WARN_DUMB("T5: inited list deep check");
+	nz_error_assert(&err1);
+
+	errh = __nz_list_vrf(&spll,&err1);
+	NZ_WARN_DUMB("T5: new list deep check");
+	nz_error_assert(&err1);
 
 	// Primer to dest
 	errh = nz_list_push_back(list, &(data[0]));
@@ -247,6 +276,8 @@ s32 test_5(nz_list *list)
 	return errh;
 }
 
+/******************************************************************************/
+
 s32 test_6(nz_list *list)
 {
 #define sz6_1 3
@@ -261,6 +292,7 @@ s32 test_6(nz_list *list)
 	nz_list_init(list);
 	nz_list_push_back(list, &(d1[0]));
 	nz_list_push_back(list, &(d1[1]));
+
 	nz_list_push_back(list, &(d1[2]));
 
 	errh = listverify_s32(list, d1, sz6_1);
@@ -299,3 +331,5 @@ s32 test_6(nz_list *list)
 
 	return errh;
 }
+
+/******************************************************************************/

@@ -33,10 +33,19 @@ s32 nz_error_init(nz_error *error);
 
 s32 nz_error_write(nz_error *error, s32 errcode, char *fmt, ...);
 
-s32 nz_error_print(nz_error *error);
-
 const char* nz_errstr(s32 error_code);
 
 s32 nz_error_free(nz_error *error);
+
+s32 __nz_error_assert(nz_error *error, s32 doexit, s32 silent);
+
+#define nz_error_print(perror)\
+	__nz_error_assert(perror,0,0)
+
+#define nz_error_assert(perror)\
+	__nz_error_assert(perror,1,0)
+
+#define nz_error_assert_silent(perror)\
+	__nz_error_assert(perror,1,1)
 
 #endif // NZ_ERROR_H
