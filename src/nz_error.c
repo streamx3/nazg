@@ -30,8 +30,9 @@ s32 __nz_error_assert(nz_error *error, s32 doexit, s32 silent)
 		errcodestr = nz_error_str_na;
 	}
 	if(!silent)
-		nz_print(error->errcode == NZ_ESUCCESS ? NZ_LVL_INFO : NZ_LVL_ERR \
-				 "[%s] %s\n", errcodestr, errstring);
+		nz_print("%s[%s] %s\n",
+				(error->errcode == NZ_ESUCCESS ? NZ_LVL_INFO : NZ_LVL_ERR),
+				errcodestr, errstring);
 	if(doexit && error->errcode != NZ_ESUCCESS)
 		exit(1);
 

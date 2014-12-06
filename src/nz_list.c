@@ -52,8 +52,7 @@ s32 __nz_list_vrfptrs(nz_list *list, nz_error *err)
 	}
 
 	//Case 2 or 3
-	if(list->begin == list->end || list->rbegin == list->rend ||
-	   list->begin != list->rbegin){
+	if(list->begin == list->end || list->rbegin == list->rend){
 		retval = NZ_EINVALID;
 		nz_error_write(err, retval, "List with simgle data item invalid:"
 			"begin[%p], end[%p], rbegin[%p], rend[%p];",
@@ -62,7 +61,8 @@ s32 __nz_list_vrfptrs(nz_list *list, nz_error *err)
 	}
 
 	if(list->size == 1 &&
-	   (list->begin->next != list->end ||
+	   (list->begin != list->rbegin ||
+	   list->begin->next != list->end ||
 	   list->begin != list->end->prev ||
 	   list->rbegin->prev != list->rend ||
 	   list->rbegin != list->rend->next)){
@@ -258,6 +258,8 @@ s32 __nz_list_splice_internal(nz_list *dst, nz_list *src, nz_node *pd1,
 	if(dst->end->prev != dst->rbegin){
 		dst->rbegin = dst->end->prev;
 		dst->rbegin->next = dst->end;
+	}else{
+		// TODO Add bugfix here!
 	}
 
 	__nz_list_size_reset(dst); /* TODO Should log here? */
@@ -458,7 +460,7 @@ s32 nz_list_push_back(nz_list *list, void *data)
 		retval = ((-1)*errh);
 		goto nz_list_push_back_out;
 	}
-	/* Since here list is valid and empty or ont empty */
+	/* Since here list is valid and empty or not empty */
 	if(errh){
 		/* List is empty */
 		__nz_node_push_to_empty_list(list, node);
@@ -600,7 +602,7 @@ s32 nz_list_splice(nz_list *dst, nz_node *pos, nz_list *src)
 {
 	s32 retval;
 	retval = NZ_ESUCCESS;
-	__NZ_CHKCOND_JMP(dst != NULL && pos != NULL && src != NULL,
+	__NZ_CHKCOND_JMP(dst == NULL || pos == NULL || src == NULL,
 					 retval, nz_list_splice_out);
 	retval = __nz_list_splice_internal(dst, src, pos, src->begin, src->rbegin);
 nz_list_splice_out:;
