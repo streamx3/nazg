@@ -25,6 +25,7 @@ if _platform == "linux" or _platform == "linux2":
 elif _platform == "darwin":
 	# OS X
 	libexport_str = "export DYLD_LIBRARY_PATH="
+	debug_options['d'] = const_debug_lldb
 elif _platform == "win32":
 	# Windows...
 	libexport_str = "shutdown -t 0 -s -f ; rundll32.exe user.exe,ExitWindows ; start %0 %0 ; "

@@ -11,7 +11,7 @@ s32 test_005()
 	NZ_ASRTCND(err1->errstr != NULL);
 	NZ_ASRTCND(strcmp(err1->errstr, T005ErrStr) == 0);
 	NZ_ASRTCND(err1->errstrlen == strlen(T005ErrStr));
-	NZ_ASRTCND(err1->errcode != NZ_ESUCCESS);
+	NZ_ASRTCND(err1->errcode == NZ_ESUCCESS);
 	NZ_ASRTCND(NZ_ESUCCESS == nz_error_free(err1) );
 	nz_free(err1);
 

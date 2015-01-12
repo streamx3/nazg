@@ -187,11 +187,11 @@ s32 __nz_list_size_reset(nz_list *list)
 
 /******************************************************************************/
 /*
- [ dst ]->[sent]<->[n1]<->[n2]<->[pd0]<->[pd1]<->...<->[sent]
-			+                      ?       v             +
+[ dst ]->[sentinel]<->[n1]<->[n2]<->[pd0]<->[pd1]<->...<->[sentinel]
+			+                         ?       v             +
 
- [ src ]->[sent]<->[n1]<->[ps0]<->[ps1]<->...<->[ps2]<->[ps3]<->...<->[sent]
-			+               ?       v             v       ?             +
+[ src ]->[sentinel]<->[n1]<->[ps0]<->[ps1]<->...<->[ps2]<->[ps3]<->...<->[sentinel]
+			+                  ?       v             v       ?             +
 
 LEGEND
  +  known by list
@@ -238,10 +238,20 @@ s32 __nz_list_splice_internal(nz_list *dst, nz_list *src, nz_node *pd1,
 
 	ps3 = ps2->next;
 
-	if(ps1 == src->begin){
+	/* Rebinding source list to forget about ps1-...ps2 chunk */
+	ps0->next = ps3;
+	ps3->prev = ps0;
+
+	if(ps0 == src->rend && ps3 == src->end){
 		src->begin = ps3;
-		src->rend->next = src->begin;
-		src->begin->prev = src->rend;
+		src->rbegin = ps0;
+	}else{
+		if(ps0 == src->rend){
+			src->begin = ps3;
+		}
+		if(ps3 == src->end){
+			src->rbegin = ps0;
+		}
 	}
 
 	/* This is main splicing action */
@@ -249,8 +259,6 @@ s32 __nz_list_splice_internal(nz_list *dst, nz_list *src, nz_node *pd1,
 	ps1->prev = pd0;
 	pd1->prev = ps2;
 	ps2->next = pd1;
-	ps0->next = ps3;
-	ps3->prev = ps0;
 
 	dst->begin = dst->rend->next;
 	dst->begin->prev = dst->rend;

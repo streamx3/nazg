@@ -24,6 +24,8 @@ s32 __nz_error_assert(nz_error *error, s32 doexit, s32 silent)
 	}
 	if(error->errstr == NULL){
 		errstring = nz_error_str_na;
+	}else{
+		errstring = error->errstr;
 	}
 	errcodestr = nz_errstr(error->errcode);
 	if(errcodestr == NULL){
@@ -87,17 +89,17 @@ s32 nz_error_write(nz_error *error, s32 errcode, char *fmt, ...)
 		return NZ_EINVALID;
 
 	va_start(arg, fmt);
-	written = snprintf(buffer, (unsigned int)NZ_ERR_BUFSZ - written, fmt, arg);
+	written += snprintf(buffer, (unsigned int)NZ_ERR_BUFSZ - written, fmt, arg);
 	va_end(arg);
 
 	__nz_errstr_try_flush(error);
 	error->errstrlen = strlen(buffer);
-	error->errstr = nz_malloc(written+1);
+	error->errstr = nz_malloc(error->errstrlen+1);
 	if(error->errstr == NULL){
 		return NZ_ENULLPTR;
 	}
-	error->errcode = NZ_EUNKNOWN;
-	strncpy(error->errstr,buffer,written);
+	error->errcode = errcode;
+	strncpy(error->errstr,buffer,error->errstrlen);
 
 	return retval;
 }
