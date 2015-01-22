@@ -41,21 +41,31 @@ s32 listverify_s32(nz_list *list, s32 *arr, u32 size)
 
 /******************************************************************************/
 
-s32 test_1(nz_list *list)
+s32 test_nz_list_init(nz_list *list)
 {
 	s32 errh;
 	NZ_ASSERT(list!= NULL, "T1: Incoming list valid");
 	errh = nz_list_init(list);
 	NZ_ASSERT(errh == NZ_ESUCCESS, "List init");
-	errh = nz_list_exit(list);
-	NZ_ASSERT(errh == NZ_ESUCCESS, "List exit");
 
-	return NZ_ESUCCESS;
+    return NZ_ESUCCESS;
 }
 
 /******************************************************************************/
 
-s32 test_2(nz_list *list)
+s32 test_nz_list_exit(nz_list *list)
+{
+    s32 errh;
+    NZ_ASSERT(list!= NULL, "T1: Incoming list valid");
+    errh = nz_list_exit(list);
+    NZ_ASSERT(errh == NZ_ESUCCESS, "List exit");
+
+    return NZ_ESUCCESS;
+}
+
+/******************************************************************************/
+
+s32 test_nz_list_pop_back(nz_list *list)
 {
 #define sz6_2_1 10
 	s32 errh,i;
@@ -83,6 +93,8 @@ s32 test_2(nz_list *list)
 	errh = nz_list_pop_back(list);
 	NZ_ASSERT(errh == NZ_ESUCCESS, "pop_back_3");
 
+    errh = __nz_list_vrf(list, NULL);
+    NZ_ASRT_DUMB("%s:__nz_list_vrf",__FUNCTION__);
 
 	errh = listverify_s32(list, data, sz6_2_1-3);
 	NZ_ASSERT(errh == NZ_ESUCCESS, "list_verify 2");
@@ -93,6 +105,33 @@ s32 test_2(nz_list *list)
 	NZ_ASSERT(errh == NZ_ESUCCESS, "list_exit");
 
 	return NZ_ESUCCESS;
+}
+
+/******************************************************************************/
+
+s32 test_nz_list_pop_front(nz_list *list)
+{
+    /* size = 10 */
+    s32 errh, i;
+    s32 data = 128;
+
+    NZ_ASSERT(list != NULL, "Incomming data");
+    nz_list_init(list);
+
+    for(i = 0; i<10; ++i){
+        nz_list_push_back(list,&data);
+        errh = __nz_list_vrf(list, NULL);
+        NZ_ASRT_DUMB("preparing list");
+    }
+    while(list->size > 0){
+        nz_list_pop_front(list);
+        errh = __nz_list_vrf(list, NULL);
+        NZ_ASRT_DUMB("poping list");
+    }
+
+    nz_list_exit(list);
+
+    return NZ_ESUCCESS;
 }
 
 /******************************************************************************/

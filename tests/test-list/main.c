@@ -10,10 +10,15 @@ int main(int argc, char* argv[]){
 
 	errh = test_005();
 
-	errh = test_1(&list1);
-	NZ_ASSERT(errh == NZ_ESUCCESS, "TEST 1");
-	errh = test_2(&list1);
-	NZ_ASSERT(errh == NZ_ESUCCESS, "TEST 2");
+	errh = test_nz_list_init(&list1);
+	NZ_ASSERT(errh == NZ_ESUCCESS, "test_nz_list_init");
+    errh = test_nz_list_exit(&list1);
+    NZ_ASSERT(errh == NZ_ESUCCESS, "test_nz_list_exit");
+	errh = test_nz_list_pop_back(&list1);
+	NZ_ASSERT(errh == NZ_ESUCCESS, "test_nz_list_pop_back");
+    errh = test_nz_list_pop_front(&list1);
+    NZ_ASSERT(errh == NZ_ESUCCESS, "test_nz_list_pop_front");
+
 	test_3(&list1);
 	NZ_ASSERT(errh == NZ_ESUCCESS, "TEST 3");
 	test_4(&list1);

@@ -8,9 +8,13 @@ s32 show_list_s32(nz_list* list);
 
 s32 listcmp_s32(nz_list *a, nz_list *b);
 
-s32 test_1(nz_list *list);
+s32 test_nz_list_init(nz_list *list);
 
-s32 test_2(nz_list *list);
+s32 test_nz_list_exit(nz_list *list);
+
+s32 test_nz_list_pop_back(nz_list *list);
+
+s32 test_nz_list_pop_front(nz_list *list);
 
 // nz_list_remove_my_iter test
 s32 test_3(nz_list *list);
