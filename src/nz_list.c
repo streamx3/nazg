@@ -377,6 +377,16 @@ nz_list_exit_out:;
 
 /******************************************************************************/
 
+#define __NZ_LIST_REBIND_TO_EMPTY(list) \
+do{ \
+    list->begin         =  list->end;    \
+    list->rbegin        =  list->rend;   \
+    list->begin->prev   =  list->rbegin; \
+    list->rbegin->next  =  list->begin;  \
+}while(0);
+
+/******************************************************************************/
+
 s32 nz_list_pop_back(nz_list *list)
 {
 	nz_node *node;
@@ -392,18 +402,19 @@ s32 nz_list_pop_back(nz_list *list)
 	}
 	/* else */
 
-	/* Get target */
+	/* Get target node */
 	node = list->rbegin;
-	/* Rebuild tail */
-	list->rbegin = list->rbegin->prev;
-	list->rbegin->next = list->end;
-	list->end->prev = list->rbegin;
 
-	/* If list has only one node */
-	if(node == list->begin){
-		list->rend = list->rbegin;
-		list->end = list->begin;
-	}
+    if(list->begin == list->rbegin){
+        /* If list has only one node */
+        __NZ_LIST_REBIND_TO_EMPTY(list);
+    }else{
+        /* Rebuild tail */
+        list->rbegin = list->rbegin->prev;
+        list->rbegin->next = list->end;
+        list->end->prev = list->rbegin;
+    }
+
 	__NZ_CALL_NODE_DESTRUCTOR(list, node);
 	nz_free(node);
 	--(list->size);

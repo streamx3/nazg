@@ -330,11 +330,11 @@ s32 test_6(nz_list *list)
 
 	errh = nz_list_resize(list, 0, NULL);
 	NZ_ASRT_DUMB("T6: resizing list to zero");
-	
-	NZ_LOG("T6: Verification of list resized to zero");
+
 	NZ_ASRTCND(list->size == 0);
-	NZ_ASRTCND(list->begin == list->end);
-	NZ_ASRTCND(list->rbegin == list->rend);
+
+	errh = __nz_list_vrf(list, NULL);
+	NZ_ASRT_DUMB("T6: Internal verification");
 
 	errh = nz_list_exit(list);
 	NZ_ASRT_DUMB("T6: incomming exit");
