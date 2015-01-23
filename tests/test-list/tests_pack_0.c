@@ -1,6 +1,6 @@
 #include "tests_pack_0.h"
 
-s32 test_005()
+s32 test_nz_error_write()
 {
 #define T005ErrStr "Sample error message"
 	nz_error *err1;
@@ -15,11 +15,5 @@ s32 test_005()
 	NZ_ASRTCND(NZ_ESUCCESS == nz_error_free(err1) );
 	nz_free(err1);
 
-	return NZ_ESUCCESS;
-}
-
-
-s32 test_006(){
-	
 	return NZ_ESUCCESS;
 }

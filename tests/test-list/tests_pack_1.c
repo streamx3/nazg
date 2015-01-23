@@ -136,7 +136,7 @@ s32 test_nz_list_pop_front(nz_list *list)
 
 /******************************************************************************/
 
-s32 test_3(nz_list *list)
+s32 test_nz_list_remove_by_iter(nz_list *list)
 {
 #define t3_size 5
 	s32 errh, i;
@@ -188,7 +188,7 @@ static void destructor_free_s32(void *data)
 
 /******************************************************************************/
 
-s32 test_4(nz_list *list)
+s32 test_nz_list_set_node_destructor(nz_list *list)
 {
 #define t4_size 2
 	s32 errh, *p_var, i;
@@ -217,7 +217,7 @@ s32 test_4(nz_list *list)
 
 /******************************************************************************/
 
-s32 test_5(nz_list *list)
+s32 test_nz_list_splice(nz_list *list)
 {
 #define t5sz 10
 #define stg1sz 4
@@ -327,7 +327,7 @@ s32 test_5(nz_list *list)
 
 /******************************************************************************/
 
-s32 test_6(nz_list *list)
+s32 test_nz_list_resize(nz_list *list)
 {
 #define sz6_1 3
 #define sz6_2 1
