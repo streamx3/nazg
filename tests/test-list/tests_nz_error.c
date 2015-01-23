@@ -1,4 +1,4 @@
-#include "tests_pack_0.h"
+#include "tests_nz_error.h"
 
 s32 test_nz_error_write()
 {

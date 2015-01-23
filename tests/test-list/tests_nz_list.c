@@ -1,4 +1,6 @@
-#include "tests_pack_1.h"
+#include "tests_nz_list.h"
+
+#define TSTNM "N/A"
 
 /******************************************************************************/
 
@@ -332,11 +334,14 @@ s32 test_nz_list_resize(nz_list *list)
 #define sz6_1 3
 #define sz6_2 1
 #define sz6_3 4
+
+#define TSTNM __FUNCTION__
+
 	s32 errh;
 	s32 d1[sz6_1] = {60,61,62};
 	s32 d2[sz6_2] = {60};
 
-	NZ_ASSERT(list != NULL, "T6: Incomming data");
+	NZ_ASSERT(list != NULL, "[%s]: Incomming data", TSTNM);
 
 	nz_list_init(list);
 	nz_list_push_back(list, &(d1[0]));
@@ -345,21 +350,21 @@ s32 test_nz_list_resize(nz_list *list)
 	nz_list_push_back(list, &(d1[2]));
 
 	errh = listverify_s32(list, d1, sz6_1);
-	NZ_ASRT_DUMB("T6: Verification of ininitial state");
+	NZ_ASRT_DUMB( "[%s]: Verification of ininitial state", TSTNM);
 
 	errh = nz_list_resize(list, (u32)sz6_2, NULL);
-	NZ_ASRT_DUMB("T6: resizing size to smaller");
+	NZ_ASRT_DUMB("[%s]: resizing size to smaller", TSTNM);
 
 	errh = nz_list_resize(list, (u32)sz6_2, NULL);
-	NZ_ASRT_DUMB("T6: resizing size to same");
+	NZ_ASRT_DUMB("[%s]: resizing size to same", TSTNM);
 
 	errh = listverify_s32(list, d2, sz6_2);
-	NZ_ASRT_DUMB("T6: Verification of srinked list");
+	NZ_ASRT_DUMB("[%s]: Verification of srinked list", TSTNM);
 
 	errh = nz_list_resize(list, (u32)sz6_3, NULL);
-	NZ_ASRT_DUMB("T6: resizing list to biger");
+	NZ_ASRT_DUMB("[%s]: resizing list to biger", TSTNM);
 
-	NZ_LOG("T6: Verification of increased list");
+	NZ_LOG("[%s]: Verification of increased list", TSTNM);
 	NZ_ASRTCND(list->size == sz6_3);
 	NZ_ASRTCND(list->begin->data == &(d1[0]));
 	NZ_ASRTCND(list->begin->next->data == NULL);
@@ -368,15 +373,15 @@ s32 test_nz_list_resize(nz_list *list)
 	NZ_ASRTCND(list->begin->next->next->next == list->rbegin);
 
 	errh = nz_list_resize(list, 0, NULL);
-	NZ_ASRT_DUMB("T6: resizing list to zero");
+	NZ_ASRT_DUMB("[%s]: resizing list to zero", TSTNM);
 
 	NZ_ASRTCND(list->size == 0);
 
 	errh = __nz_list_vrf(list, NULL);
-	NZ_ASRT_DUMB("T6: Internal verification");
+	NZ_ASRT_DUMB("[%s]: Internal verification", TSTNM);
 
 	errh = nz_list_exit(list);
-	NZ_ASRT_DUMB("T6: incomming exit");
+	NZ_ASRT_DUMB("[%s]: incomming exit", TSTNM);
 
 	return errh;
 }

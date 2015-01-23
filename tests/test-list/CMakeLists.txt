@@ -2,10 +2,10 @@ cmake_minimum_required(VERSION 2.8)
 
 project(test-list)
 
-set(LIST_TEST_HEADERS	tests_pack_0.h
-						tests_pack_1.h)
-set(LIST_TEST_SOURCES	tests_pack_0.c
-						tests_pack_1.c
+set(LIST_TEST_HEADERS	tests_nz_error.h
+						tests_nz_list.h)
+set(LIST_TEST_SOURCES	tests_nz_error.c
+						tests_nz_list.c
 						main.c)
 
 add_executable(test-list ${LIST_TEST_HEADERS}
