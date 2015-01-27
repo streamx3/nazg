@@ -2,6 +2,10 @@
 
 /******************************************************************************/
 
+#define __NZ_LIST_EMPTY(list) (list->begin==list->end||list->size==0)
+
+/******************************************************************************/
+
 s32 __nz_list_vrfptrs(nz_list *list, nz_error *err)
 {
 	s32 retval;
@@ -377,88 +381,73 @@ nz_list_exit_out:;
 
 /******************************************************************************/
 
-#define __NZ_LIST_REBIND_TO_EMPTY(list) \
-do{ \
-    list->begin         =  list->end;    \
-    list->rbegin        =  list->rend;   \
-    list->begin->prev   =  list->rbegin; \
-    list->rbegin->next  =  list->begin;  \
-}while(0);
+#define POP_FRONT 1
+#define POP_BACK  0
 
-/******************************************************************************/
-
-s32 nz_list_pop_back(nz_list *list)
+s32 __nz_list_pop(nz_list *list, int pop_direction )
 {
 	nz_node *node;
 	s32 retval;
 	retval = NZ_ESUCCESS;
 
 	__NZ_CHKCOND_JMP(list == NULL || list->end == NULL, \
-					 retval, nz_list_pop_back_out);
+					 retval, __nz_list_pop_out);
 
-	if(list->begin == list->end || list->size == 0){
+	if(__NZ_LIST_EMPTY(list)){
 		retval = NZ_ENOTFOUND;
-		goto nz_list_pop_back_out;
+		goto __nz_list_pop_out;
 	}
 	/* else */
 
 	/* Get target node */
-	node = list->rbegin;
+	if(pop_direction == POP_FRONT){
+		node = list->begin;
+	}else if(pop_direction == POP_BACK){
+		node = list->rbegin;
+	}else{
+		retval = NZ_EINVALID;
+		goto __nz_list_pop_out;
+	}
 
-    if(list->begin == list->rbegin){
-        /* If list has only one node */
-        __NZ_LIST_REBIND_TO_EMPTY(list);
-    }else{
-        /* Rebuild tail */
-        list->rbegin = list->rbegin->prev;
-        list->rbegin->next = list->end;
-        list->end->prev = list->rbegin;
-    }
+	if(list->begin == list->rbegin){
+		/* If list has only one node -- REBIND_TO_EMPTY */
+		list->begin         =  list->end;
+		list->rbegin        =  list->rend;
+		list->begin->prev   =  list->rbegin;
+		list->rbegin->next  =  list->begin;
+	}else{
+		/* Rebuild tail */
+		if(pop_direction == POP_FRONT){
+			list->begin = list->begin->next;
+			list->begin->prev = list->rend;
+			list->rend->next = list->begin;
+		}else{ /* POP_BACK */
+			list->rbegin = list->rbegin->prev;
+			list->rbegin->next = list->end;
+			list->end->prev = list->rbegin;
+		}
+	}
 
 	__NZ_CALL_NODE_DESTRUCTOR(list, node);
 	nz_free(node);
 	--(list->size);
 
-nz_list_pop_back_out:;
+__nz_list_pop_out:;
 	return retval;
+}
+
+/******************************************************************************/
+
+s32 nz_list_pop_back(nz_list *list)
+{
+	return __nz_list_pop(list, POP_BACK);
 }
 
 /******************************************************************************/
 
 s32 nz_list_pop_front(nz_list *list)
 {
-	//TODO Find and fix bug here
-	nz_node *node;
-	s32 retval;
-	retval = NZ_ESUCCESS;
-
-	__NZ_CHKCOND_JMP(list == NULL || list->begin == NULL, \
-					 retval, nz_list_pop_front_out);
-					 \
-	if(list->begin == list->end || list->size == 0){
-		retval = NZ_ENOTFOUND;
-		goto nz_list_pop_front_out;
-	}
-	/* else */
-
-	/* Get target */
-	node = list->begin;
-	/* Rebuild tail */
-	list->begin = list->begin->next;
-	list->begin->prev = list->rend;
-	list->rend->next = list->begin;
-
-	/* If list has only one node */
-	if(node == list->rbegin){
-		list->rbegin = list->rend;
-		list->begin = list->end;
-	}
-	__NZ_CALL_NODE_DESTRUCTOR(list, node);
-	nz_free(node);
-	--(list->size);
-
-nz_list_pop_front_out:;
-	return retval;
+	return __nz_list_pop(list, POP_FRONT);
 }
 
 /******************************************************************************/
