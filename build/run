@@ -27,7 +27,7 @@ elif _platform == "darwin":
 	libexport_str = "export DYLD_LIBRARY_PATH="
 	debug_options['d'] = const_debug_lldb
 elif _platform == "win32":
-	# Windows...
+	# Windows
 	libexport_str = "shutdown -t 0 -s -f ; rundll32.exe user.exe,ExitWindows ; start %0 %0 ; "
 
 libexport_str+="../out/lib/ && "
@@ -55,6 +55,19 @@ def build_debug(cmd):
 	os.system("cmake -DCMAKE_BUILD_TYPE=Debug .. && " + const_make_string)
 	return None
 
+def build_qt_configurable(config):
+	if config != 'release' and config != 'debug':
+		print('Error! Wrong qt build config given!')
+		return None
+	print "Building Qt in " + config
+	os.system('qmake nazg.pro "CONFIG = ' + config + '" && make')
+	return None
+
+def build_qt_release(cmd):
+	return build_qt_configurable('release')
+
+def build_qt_debug(cmd):
+	return build_qt_configurable('debug')
 
 def clean(cmd):
 	os.system("for a in `ls | grep -v run` ; do rm -rfv $a; done && rm -rfv ../out")
