@@ -2,6 +2,6 @@ TEMPLATE = subdirs
 
 SUBDIRS += \
     tests \
-    nazg
+    libnazg
 
-tests.depends = nazg
+tests.depends = libnazg

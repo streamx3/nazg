@@ -1,8 +1,4 @@
-TEMPLATE = app
-CONFIG += console
-CONFIG -= app_bundle
-CONFIG -= qt
+TEMPLATE = subdirs
 
-SOURCES += main.c
-
-HEADERS += test.h
+SUBDIRS += \
+    test-list
