@@ -13,111 +13,116 @@ const_debug_gdb = 'gdb --silent -x ../debug/test-list.txt'
 const_debug_lldb = 'lldb --source ../debug/test-list-lldb.txt'
 
 debug_options = {
-	'd': const_debug_gdb,
-	'd_gdb': const_debug_gdb,
-	'd_lldb': const_debug_lldb
+    'd': const_debug_gdb,
+    'd_gdb': const_debug_gdb,
+    'd_lldb': const_debug_lldb
 }
 debug_options = defaultdict(lambda: const_debug_gdb, debug_options)
 
 if _platform == "linux" or _platform == "linux2":
-	# Linux
-	libexport_str = "export LD_LIBRARY_PATH="
+    # Linux
+    libexport_str = "export LD_LIBRARY_PATH="
 elif _platform == "darwin":
-	# OS X
-	libexport_str = "export DYLD_LIBRARY_PATH="
-	debug_options['d'] = const_debug_lldb
+    # OS X
+    libexport_str = "export DYLD_LIBRARY_PATH="
+    debug_options['d'] = const_debug_lldb
 elif _platform == "win32":
-	# Windows
-	libexport_str = "shutdown -t 0 -s -f ; rundll32.exe user.exe,ExitWindows ; start %0 %0 ; "
+    # Windows
+    libexport_str = "shutdown -t 0 -s -f ; rundll32.exe user.exe,ExitWindows ; start %0 %0 ; "
 
-libexport_str+="../out/lib/ && "
+libexport_str += "../out/lib/ && "
+
 
 def fn_help(cmd):
-	print '\nAvailable options are:'
-	print '\tb build			-- build without debug symbols'
-	print '\tbd build_debug		-- build without debug symbols'
-	print '\th help				-- display help'
-	print '\tc clean			-- clean the build'
-	print '\td debug			-- start default debug session'
-	print '\td_gdb debug_gdb	-- start debug with GDB'
-	print '\td_lldb debug_lldb	-- start debug with LLVM Debugger'
-	print ' '
+    print '\nAvailable options are:'
+    print '\tb build			-- build without debug symbols'
+    print '\tbd build_debug		-- build without debug symbols'
+    print '\th help				-- display help'
+    print '\tc clean			-- clean the build'
+    print '\td debug			-- start default debug session'
+    print '\td_gdb debug_gdb	-- start debug with GDB'
+    print '\td_lldb debug_lldb	-- start debug with LLVM Debugger'
+    print ' '
 
 
 def build(cmd):
-	print "Building non-debug..."
-	os.system("cmake .. && " + const_make_string)
-	return None
+    print "Building non-debug..."
+    os.system("cmake .. && " + const_make_string)
+    return None
 
 
 def build_debug(cmd):
-	print "Building debug..."
-	os.system("cmake -DCMAKE_BUILD_TYPE=Debug .. && " + const_make_string)
-	return None
+    print "Building debug..."
+    os.system("cmake -DCMAKE_BUILD_TYPE=Debug .. && " + const_make_string)
+    return None
+
 
 def build_qt_configurable(config):
-	if config != 'release' and config != 'debug':
-		print('Error! Wrong qt build config given!')
-		return None
-	print "Building Qt in " + config
-	os.system('qmake nazg.pro "CONFIG = ' + config + '" && make')
-	return None
+    if config != 'release' and config != 'debug':
+        print('Error! Wrong qt build config given!')
+        return None
+    print "Building Qt in " + config
+    os.system('qmake nazg.pro "CONFIG = ' + config + '" && make')
+    return None
+
 
 def build_qt_release(cmd):
-	return build_qt_configurable('release')
+    return build_qt_configurable('release')
+
 
 def build_qt_debug(cmd):
-	return build_qt_configurable('debug')
+    return build_qt_configurable('debug')
+
 
 def clean(cmd):
-	os.system("for a in `ls | grep -v run` ; do rm -rfv $a; done && rm -rfv ../out")
-	return None
+    os.system("for a in `ls | grep -v run` ; do rm -rfv $a; done && rm -rfv ../out")
+    return None
 
 
 def debug(cmd):
-	os.system(libexport_str + debug_options[cmd])
-	return None
+    os.system(libexport_str + debug_options[cmd])
+    return None
 
 
 def execute(cmd):
-	return os.system(libexport_str + "../out/bin/test-list")
+    return os.system(libexport_str + "../out/bin/test-list")
 
 
 def wrong_option(cmd):
-	print 'Wrong option \'' + cmd + '\'!'
-	fn_help("ololo1")
-	exit(1)
+    print 'Wrong option \'' + cmd + '\'!'
+    fn_help("ololo1")
+    exit(1)
 
 
 def doxygen(cmd):
-	print 'doxygen(): I\'m not implemented!'
-	return None
+    print 'doxygen(): I\'m not implemented!'
+    return None
 
 # Bind names to function calls
 options = {'b': build,
-		   'build': build,
-		   'bd': build_debug,
-		   'build_debug': build_debug,
-		   'e': execute,
-		   'exec': execute,
-		   'h': fn_help,
-		   'help': fn_help,
-		   'c': clean,
-		   'clean': clean,
-		   'd': debug,
-		   'debug': debug,
-		   'd_gdb': debug,
-		   'debug_gdb': debug,
-		   'd_lldb': debug,
-		   'debug_lldb': debug,
-		   'doc':doxygen,
-		   'doxygen':doxygen
+           'build': build,
+           'bd': build_debug,
+           'build_debug': build_debug,
+           'e': execute,
+           'exec': execute,
+           'h': fn_help,
+           'help': fn_help,
+           'c': clean,
+           'clean': clean,
+           'd': debug,
+           'debug': debug,
+           'd_gdb': debug,
+           'debug_gdb': debug,
+           'd_lldb': debug,
+           'debug_lldb': debug,
+           'doc': doxygen,
+           'doxygen': doxygen
 }
 
-#Set default function if name is not recognized
+# Set default function if name is not recognized
 options = defaultdict(lambda: wrong_option, options)
 
 # Process arguments except for first
 for cmd in sys.argv:
-	if cmd != sys.argv[0]:
-		options[cmd](cmd)
+    if cmd != sys.argv[0]:
+        options[cmd](cmd)
