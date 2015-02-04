@@ -8,6 +8,8 @@ from sys import platform as _platform
 
 libexport_str = ""
 
+options_dict = {}
+
 const_make_string = "make && make install"
 const_debug_gdb = 'gdb --silent -x ../debug/test-list.txt'
 const_debug_lldb = 'lldb --source ../debug/test-list-lldb.txt'
@@ -45,8 +47,24 @@ def fn_help(cmd):
     print ' '
 
 
-def build(cmd):
-    print "Building non-debug..."
+def build_cmake_release(cmd):
+    return None
+
+
+def build_cmake_debug(cmd):
+    return None
+
+
+def build_qmake_release(cmd):
+    return None
+
+
+def build_qmake_debug(cmd):
+    return None
+
+
+def build_release(cmd):
+    print "Building release..."
     os.system("cmake .. && " + const_make_string)
     return None
 
@@ -98,25 +116,149 @@ def doxygen(cmd):
     print 'doxygen(): I\'m not implemented!'
     return None
 
+
+options_dict = {
+    'build_qmake_debug': {
+        'alias': ['b', 'bq', 'bqd', 'build', 'build_qmake', 'build_qmake_debug'],
+        'func': build_qmake_debug,
+        'descr': 'Build qmake release'
+    },
+    'build_qmake_release': {
+        'alias': ['bqr', 'build_qmake_release'],
+        'func': build_qmake_release,
+        'descr': 'Build qmake release'
+    },
+    'clean_qmake': {
+        'alias': ['cq', 'clean_qmake'],
+        'func': clean_qmake,
+        'descr': 'Clean qmake'
+    },
+    'exec_qmake': {
+        'alias': ['eq', 'exec_qmake'],
+        'func': exec_qmake,
+        'descr': 'Exec qmake release'
+    },
+    'debug_qmake_gdb':{
+        'alias': ['d', 'dbg', 'dqg', 'dbg_qmake', 'debug_qmake_gdb'],
+        'func': debug_qmake_gdb
+        'descr': 'Debug qmake build with GDB'
+    },
+    'debug_qmake_lldb':{
+        'alias': ['dql', 'debug_qmake_lldb'],
+        'func': debug_qmake_gdb
+        'descr': 'Debug qmake build with GDB'
+    },
+    ############################################################################
+    'build_cmake_debug': {
+        'alias': ['bc', 'bcd', 'build_cmake_debug'],
+        'func': build_cmake_debug,
+        'descr': 'Build cmake release'
+    },
+    'build_cmake_release': {
+        'alias': ['bcr', 'build_cmake_debug'],
+        'func': build_cmake_release,
+        'descr': 'Build cmake release'
+    },
+    'clean_cmake': {
+        'alias': ['cc', 'clean_cmake'],
+        'func': clean_cmake,
+        'descr': 'Clean cmake'
+    },
+    'exec_cmake': {
+        'alias': ['ec', 'exec_cmake'],
+        'func': exec_cmake,
+        'descr': 'Exec cmake release'
+    },
+    'debug_cmake_gdb':{
+        'alias': ['dcg', 'dbg_cmake', 'debug_cmake_gdb'],
+        'func': debug_cmake_gdb
+        'descr': 'Debug cmake build with GDB'
+    },
+    'debug_cmake_lldb':{
+        'alias': ['dcl', 'debug_cmake_lldb'],
+        'func': debug_cmake_gdb
+        'descr': 'Debug cmake build with GDB'
+    },
+    ############################################################################
+    'doxygen': {
+        'alias': ['dx', 'doxygen', 'doc'],
+        'func': doxygen,
+        'descr': 'Generate doxygen documentation'
+    },
+    'doxygen_clean': {
+        'alias': ['dxc', 'doc_clean', 'doxygen_clean'],
+        'func': doxygen_clean,
+        'descr': 'Clean doxygen documentation'
+    },
+    ############################################################################
+    'clean_all': {
+        'alias': ['ca', 'clean_all'],
+        'func': clean_all,
+        'descr': 'Clean all builds'
+    },
+    'help': {
+        'alias': ['h', '-h', 'help', '--help'],
+        'func': fn_help,
+        'descr': 'Display help message'
+    }
+
+}
+
 # Bind names to function calls
-options = {'b': build,
-           'build': build,
-           'bd': build_debug,
-           'build_debug': build_debug,
-           'e': execute,
-           'exec': execute,
-           'h': fn_help,
-           'help': fn_help,
-           'c': clean,
-           'clean': clean,
-           'd': debug,
-           'debug': debug,
-           'd_gdb': debug,
-           'debug_gdb': debug,
-           'd_lldb': debug,
-           'debug_lldb': debug,
-           'doc': doxygen,
-           'doxygen': doxygen
+options = {
+    'b': build_debug,
+    'build': build_debug,
+    'br': build_release,
+    'build_release': build_release,
+    'bd': build_debug,
+    'build_debug': build_debug,
+    ######################################
+    'bc': build_debug,
+    'build_cmake': build_debug,
+    'bcr': build_release,
+    'build_cmake_release': build_release,
+    'bcd': build_debug,
+    'build_cmake_debug': build_debug,
+    ######################################
+    'bq': build_debug,
+    'build_qmake': build_debug,
+    'bqr': build_release,
+    'build_qmake_release': build_release,
+    'bqd': build_debug,
+    'build_qmake_debug': build_debug,
+    ######################################
+    'e': execute,
+    'exec': execute,
+    ######################################
+    'h': fn_help,
+    'help': fn_help,
+    ######################################
+    'c': clean,
+    'clean': clean,
+    ######################################
+    'd': debug,
+    'debug': debug,
+    'd_gdb': debug,
+    'debug_gdb': debug,
+    'd_lldb': debug,
+    'debug_lldb': debug,
+    ######################################
+    'dc': debug,
+    'debug_cmake': debug,
+    'dc_gdb': debug,
+    'debug_cmake_gdb': debug,
+    'dc_lldb': debug,
+    'debug_cmake_lldb': debug,
+    ######################################
+    'dq': debug,
+    'debug_qmake': debug,
+    'dq_gdb': debug,
+    'debug_qmake_gdb': debug,
+    'dq_lldb': debug,
+    'debug_qmake_lldb': debug,
+    ######################################
+    'doc': doxygen,
+    'doxygen': doxygen
 }
 
 # Set default function if name is not recognized
