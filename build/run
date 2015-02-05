@@ -8,7 +8,7 @@ from collections import defaultdict
 
 class BuildAssistant:
     def __init__(self):
-        self.const_make_string = "make && make install"
+        self.const_make_string = 'make && make install'
         self.const_debug_gdb = 'gdb --silent -x ../debug/test-list.txt'
         self.const_debug_lldb = 'lldb --source ../debug/test-list-lldb.txt'
 
@@ -20,21 +20,21 @@ class BuildAssistant:
         self.debug_options = defaultdict(lambda: self.const_debug_gdb,
                                          self.debug_options)
 
-        self.libexport_str = ""
-        if sys.platform == "linux" or sys.platform == "linux2":
+        self.libexport_str = ''
+        if sys.platform == 'linux' or sys.platform == 'linux2':
             # Linux
-            self.libexport_str = "export LD_LIBRARY_PATH="
-        elif sys.platform == "darwin":
+            self.libexport_str = 'export LD_LIBRARY_PATH='
+        elif sys.platform == 'darwin':
             # OS X
-            self.libexport_str = "export DYLD_LIBRARY_PATH="
+            self.libexport_str = 'export DYLD_LIBRARY_PATH='
             self.debug_options['d'] = self.const_debug_lldb
-        elif sys.platform == "win32":
+        elif sys.platform == 'win32':
             # Windows
-            self.libexport_str = "shutdown -t 0 -s -f ; " + \
-                                 " rundll32.exe user.exe,ExitWindows ; " + \
-                                 " start %0 %0 ; "
+            self.libexport_str = 'shutdown -t 0 -s -f ; ' + \
+                                 ' rundll32.exe user.exe,ExitWindows ; ' + \
+                                 ' start %0 %0 ; '
 
-        self.libexport_str += "../out/lib/ && "
+        self.libexport_str += '../out/lib/ && '
 
         self.options_dict = {
             'build_qmake_debug': {
@@ -125,15 +125,21 @@ class BuildAssistant:
         pass
 
     def fn_help(self):
-        print '\nAvailable options are:'
-        print '\tb build			-- build without debug symbols'
-        print '\tbd build_debug		-- build without debug symbols'
-        print '\th help				-- display help'
-        print '\tc clean			-- clean the build'
-        print '\td debug			-- start default debug session'
-        print '\td_gdb debug_gdb	-- start debug with GDB'
-        print '\td_lldb debug_lldb	-- start debug with LLVM Debugger'
-        print ' '
+        for option in self.options_dict:
+            print option + '\t' \
+                  # + self.options_dict[option]['alias']
+                  # + '\t' + self.options_dict[option]['descr']
+            for alias in self.options_dict[option]['alias']:
+                print alias + ' '
+        # print '\nAvailable options are:'
+        # print '\tb build			-- build without debug symbols'
+        # print '\tbd build_debug		-- build without debug symbols'
+        # print '\th help				-- display help'
+        # print '\tc clean			-- clean the build'
+        # print '\td debug			-- start default debug session'
+        # print '\td_gdb debug_gdb	-- start debug with GDB'
+        # print '\td_lldb debug_lldb	-- start debug with LLVM Debugger'
+        # print ' '
 
     def build_cmake_release(self):
         return None
@@ -148,13 +154,13 @@ class BuildAssistant:
         return None
 
     def build_release(self):
-        print "Building release..."
-        os.system("cmake .. && " + self.const_make_string)
+        print 'Building release...'
+        os.system('cmake .. && ' + self.const_make_string)
         return None
 
     def build_debug(self):
-        print "Building debug..."
-        os.system("cmake -DCMAKE_BUILD_TYPE=Debug .. && " +
+        print 'Building debug...'
+        os.system('cmake -DCMAKE_BUILD_TYPE=Debug .. && ' +
                   self.const_make_string)
         return None
 
@@ -162,8 +168,8 @@ class BuildAssistant:
         if config != 'release' and config != 'debug':
             print('Error! Wrong qt build config given!')
             return None
-        print "Building Qt in " + config
-        os.system('qmake nazg.pro "CONFIG = ' + config + '" && make')
+        print 'Building Qt in ' + config
+        os.system('qmake nazg.pro 'CONFIG = ' + config + '' && make')
         return None
 
     def build_qt_release(self):
@@ -179,8 +185,8 @@ class BuildAssistant:
         return None
 
     def clean(self):
-        os.system("for a in `ls | grep -v run` ; " +
-                  " do rm -rfv $a; done && rm -rfv ../out")
+        os.system('for a in `ls | grep -v run` ; ' +
+                  ' do rm -rfv $a; done && rm -rfv ../out')
         return None
 
     def clean_all(self):
@@ -209,11 +215,11 @@ class BuildAssistant:
         return None
 
     def execute(self):
-        return os.system(self.libexport_str + "../out/bin/test-list")
+        return os.system(self.libexport_str + '../out/bin/test-list')
 
     def wrong_option(self):
         print 'Wrong option \'' + self.cmd + '\'!'
-        self.fn_help("ololo1")
+        self.fn_help('ololo1')
         exit(1)
 
     def doxygen(self):
@@ -227,7 +233,7 @@ class BuildAssistant:
 # # Bind names to function calls
 # options = {
 # 'b': build_debug,
-#     'build': build_debug,
+# 'build': build_debug,
 #     'br': build_release,
 #     'build_release': build_release,
 #     'bd': build_debug,
@@ -288,3 +294,7 @@ class BuildAssistant:
 # for cmd in sys.argv:
 #     if cmd != sys.argv[0]:
 #         options[cmd](cmd)
+
+
+ba1 = BuildAssistant()
+ba1.fn_help()
