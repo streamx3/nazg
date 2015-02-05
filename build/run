@@ -6,12 +6,29 @@ import sys
 from collections import defaultdict
 
 
+def rmrf(path):
+    for root, dirs, files in os.walk(path, topdown=False):
+        for name in files:
+            print 'root = ' + root + '; file = ' + name + '; joined = ' + os.path.join(root, name)
+        for name in dirs:
+            print 'root = ' + root + '; dir = ' + name + '; joined = ' + os.path.join(root, name)
+        for name in files:
+            os.remove(os.path.join(root, name))
+        for name in dirs:
+            os.rmdir(os.path.join(root, name))
+
+    return None
+
+
 class BuildAssistant:
     def __init__(self):
         self.current_command = ''
         self.const_make_string = 'make && make install'
         self.const_debug_gdb = 'gdb --silent -x ../debug/test-list.txt'
         self.const_debug_lldb = 'lldb --source ../debug/test-list-lldb.txt'
+        self.const_dir_out = '../out'
+        self.const_dir_out_qmake = self.const_dir_out + '/qmake'
+        self.const_dir_out_cmake = self.const_dir_out + '/cmake'
 
         self.debug_options = {
             'd': self.const_debug_gdb,
@@ -124,7 +141,7 @@ class BuildAssistant:
             }
         }
         self.options_dict = defaultdict(
-            lambda: {'error': {'alias': ['error'], 'func': self.wrong_option(),
+            lambda: {'error': {'alias': ['error'], 'func': self.wrong_option,
                                'descr': 'Eror happened'}}, self.options_dict)
         pass
 
@@ -186,10 +203,15 @@ class BuildAssistant:
         return self.build_qt_configurable('debug')
 
     def clean_qmake(self):
+        makefilse = ['qt/Makefile', 'qt/libnazg/Makefile',
+                     'qt/tests/Makefile', 'qt/tests/test-list/Makefile']
+        for mf in makefilse:
+            os.remove(mf)
+        rmrf(self.const_dir_out_qmake)
         return None
 
-
     def clean_cmake(self):
+        rmrf(self.const_dir_out_cmake)
         return None
 
     def clean(self):
@@ -198,6 +220,9 @@ class BuildAssistant:
         return None
 
     def clean_all(self):
+        self.clean_cmake()
+        self.clean_qmake()
+        rmrf(self.const_dir_out)
         return None
 
     def debug_qmake_gdb(self):
@@ -256,3 +281,16 @@ class BuildAssistant:
 
 ba1 = BuildAssistant()
 ba1.process_stdin()
+
+
+# # Sketch for deleting
+# # Delete everything reachable from the directory named in 'top',
+# # assuming there are no symbolic links.
+# # CAUTION:  This is dangerous!  For example, if top == '/', it
+# # could delete all your disk files.
+# import os
+# for root, dirs, files in os.walk(top, topdown=False):
+#     for name in files:
+#         os.remove(os.path.join(root, name))
+#     for name in dirs:
+#         os.rmdir(os.path.join(root, name))
