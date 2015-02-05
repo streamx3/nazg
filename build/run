@@ -9,14 +9,9 @@ from collections import defaultdict
 def rmrf(path):
     for root, dirs, files in os.walk(path, topdown=False):
         for name in files:
-            print 'root = ' + root + '; file = ' + name + '; joined = ' + os.path.join(root, name)
-        for name in dirs:
-            print 'root = ' + root + '; dir = ' + name + '; joined = ' + os.path.join(root, name)
-        for name in files:
             os.remove(os.path.join(root, name))
         for name in dirs:
             os.rmdir(os.path.join(root, name))
-
     return None
 
 
@@ -203,8 +198,8 @@ class BuildAssistant:
         return self.build_qt_configurable('debug')
 
     def clean_qmake(self):
-        makefilse = ['qt/Makefile', 'qt/libnazg/Makefile',
-                     'qt/tests/Makefile', 'qt/tests/test-list/Makefile']
+        makefilse = ['qmake/Makefile', 'qmake/libnazg/Makefile',
+                     'qmake/tests/Makefile', 'qmake/tests/test-list/Makefile']
         for mf in makefilse:
             os.remove(mf)
         rmrf(self.const_dir_out_qmake)
