@@ -6,9 +6,15 @@ import sys
 from collections import defaultdict
 from sys import platform as _platform
 
-libexport_str = ""
 
-options_dict = {}
+class BuildAssistant:
+    libexport_str = ""
+    options_dict = {}
+
+    def __init__(self):
+
+        return None
+
 
 const_make_string = "make && make install"
 const_debug_gdb = 'gdb --silent -x ../debug/test-list.txt'
@@ -30,7 +36,8 @@ elif _platform == "darwin":
     debug_options['d'] = const_debug_lldb
 elif _platform == "win32":
     # Windows
-    libexport_str = "shutdown -t 0 -s -f ; rundll32.exe user.exe,ExitWindows ; start %0 %0 ; "
+    libexport_str = "shutdown -t 0 -s -f ; " + \
+                    " rundll32.exe user.exe,ExitWindows ; start %0 %0 ; "
 
 libexport_str += "../out/lib/ && "
 
@@ -92,13 +99,49 @@ def build_qt_debug(cmd):
     return build_qt_configurable('debug')
 
 
+def clean_qmake(cmd):
+    return None
+
+
+def clean_cmake(cmd):
+    return None
+
+
 def clean(cmd):
     os.system("for a in `ls | grep -v run` ; do rm -rfv $a; done && rm -rfv ../out")
     return None
 
 
+def clean_all(cmd):
+    return None
+
+
+def debug_qmake_gdb(cmd):
+    return None
+
+
+def debug_qmake_lldb(cmd):
+    return None
+
+
+def debug_cmake_gdb(cmd):
+    return None
+
+
+def debug_cmake_lldb(cmd):
+    return None
+
+
 def debug(cmd):
     os.system(libexport_str + debug_options[cmd])
+    return None
+
+
+def exec_qmake(cmd):
+    return None
+
+
+def exec_cmake(cmd):
     return None
 
 
@@ -114,6 +157,10 @@ def wrong_option(cmd):
 
 def doxygen(cmd):
     print 'doxygen(): I\'m not implemented!'
+    return None
+
+
+def doxygen_clean(cmd):
     return None
 
 
@@ -138,14 +185,14 @@ options_dict = {
         'func': exec_qmake,
         'descr': 'Exec qmake release'
     },
-    'debug_qmake_gdb':{
+    'debug_qmake_gdb': {
         'alias': ['d', 'dbg', 'dqg', 'dbg_qmake', 'debug_qmake_gdb'],
-        'func': debug_qmake_gdb
+        'func': debug_qmake_gdb,
         'descr': 'Debug qmake build with GDB'
     },
-    'debug_qmake_lldb':{
+    'debug_qmake_lldb': {
         'alias': ['dql', 'debug_qmake_lldb'],
-        'func': debug_qmake_gdb
+        'func': debug_qmake_gdb,
         'descr': 'Debug qmake build with GDB'
     },
     ############################################################################
@@ -169,14 +216,14 @@ options_dict = {
         'func': exec_cmake,
         'descr': 'Exec cmake release'
     },
-    'debug_cmake_gdb':{
+    'debug_cmake_gdb': {
         'alias': ['dcg', 'dbg_cmake', 'debug_cmake_gdb'],
-        'func': debug_cmake_gdb
+        'func': debug_cmake_gdb,
         'descr': 'Debug cmake build with GDB'
     },
-    'debug_cmake_lldb':{
+    'debug_cmake_lldb': {
         'alias': ['dcl', 'debug_cmake_lldb'],
-        'func': debug_cmake_gdb
+        'func': debug_cmake_gdb,
         'descr': 'Debug cmake build with GDB'
     },
     ############################################################################
