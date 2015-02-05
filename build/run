@@ -125,21 +125,21 @@ class BuildAssistant:
         pass
 
     def fn_help(self):
+        buf_alias = {}
+        maxlen = 0
+        print '\nAvailable options are:'
         for option in self.options_dict:
-            print option + '\t' \
-                  # + self.options_dict[option]['alias']
-                  # + '\t' + self.options_dict[option]['descr']
+            buf_alias[option] = ''
             for alias in self.options_dict[option]['alias']:
-                print alias + ' '
-        # print '\nAvailable options are:'
-        # print '\tb build			-- build without debug symbols'
-        # print '\tbd build_debug		-- build without debug symbols'
-        # print '\th help				-- display help'
-        # print '\tc clean			-- clean the build'
-        # print '\td debug			-- start default debug session'
-        # print '\td_gdb debug_gdb	-- start debug with GDB'
-        # print '\td_lldb debug_lldb	-- start debug with LLVM Debugger'
-        # print ' '
+                assert isinstance(alias, str)
+                buf_alias[option] += alias + ' '
+            maxlen = len(buf_alias[option]) if len(buf_alias[option]) > maxlen \
+                else maxlen
+        for option in buf_alias:
+            assert isinstance(buf_alias[option], str)
+            buf_alias[option] = buf_alias[option].ljust(maxlen, ' ')
+            print '  ' + buf_alias[option] + ' -- ' + \
+                  self.options_dict[option]['descr']
 
     def build_cmake_release(self):
         return None
@@ -169,7 +169,7 @@ class BuildAssistant:
             print('Error! Wrong qt build config given!')
             return None
         print 'Building Qt in ' + config
-        os.system('qmake nazg.pro 'CONFIG = ' + config + '' && make')
+        os.system('qmake nazg.pro "CONFIG = ' + config + '" && make')
         return None
 
     def build_qt_release(self):
