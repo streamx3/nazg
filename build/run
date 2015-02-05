@@ -8,6 +8,7 @@ from collections import defaultdict
 
 class BuildAssistant:
     def __init__(self):
+        self.current_command = ''
         self.const_make_string = 'make && make install'
         self.const_debug_gdb = 'gdb --silent -x ../debug/test-list.txt'
         self.const_debug_lldb = 'lldb --source ../debug/test-list-lldb.txt'
@@ -51,12 +52,12 @@ class BuildAssistant:
             '31_clean_qmake': {
                 'alias': ['cq', 'clean_qmake'],
                 'func': self.clean_qmake,
-                'descr': 'Clean qmake'
+                'descr': 'Clean qmake build'
             },
             '21_exec_qmake': {
                 'alias': ['eq', 'exec_qmake'],
                 'func': self.exec_qmake,
-                'descr': 'Exec qmake release'
+                'descr': 'Exec qmake build'
             },
             '11_debug_qmake_gdb': {
                 'alias': ['d', 'dbg', 'dqg', 'dbg_qmake', 'debug_qmake_gdb'],
@@ -82,12 +83,12 @@ class BuildAssistant:
             '33_clean_cmake': {
                 'alias': ['cc', 'clean_cmake'],
                 'func': self.clean_cmake,
-                'descr': 'Clean cmake'
+                'descr': 'Clean cmake build'
             },
             '23_exec_cmake': {
                 'alias': ['ec', 'exec_cmake'],
                 'func': self.exec_cmake,
-                'descr': 'Exec cmake release'
+                'descr': 'Exec cmake build'
             },
             '13_debug_cmake_gdb': {
                 'alias': ['dcg', 'dbg_cmake', 'debug_cmake_gdb'],
@@ -112,7 +113,7 @@ class BuildAssistant:
             },
             ####################################################################
             '39_clean_all': {
-                'alias': ['ca', 'clean_all'],
+                'alias': ['c', 'ca', 'clean_all'],
                 'func': self.clean_all,
                 'descr': 'Clean all builds'
             },
@@ -128,9 +129,9 @@ class BuildAssistant:
         pass
 
     def fn_help(self):
+        print '\nAvailable options are:'
         buf_alias = {}
         maxlen = 0
-        print '\nAvailable options are:'
         for option in self.options_dict:
             buf_alias[option] = ''
             for alias in self.options_dict[option]['alias']:
@@ -144,6 +145,7 @@ class BuildAssistant:
             buf_alias[option] = buf_alias[option].ljust(maxlen, ' ')
             print '  ' + buf_alias[option] + ' -- ' + \
                   self.options_dict[option]['descr']
+        pass
 
     def build_cmake_release(self):
         return None
@@ -168,6 +170,7 @@ class BuildAssistant:
                   self.const_make_string)
         return None
 
+    @staticmethod
     def build_qt_configurable(config):
         if config != 'release' and config != 'debug':
             print('Error! Wrong qt build config given!')
@@ -184,6 +187,7 @@ class BuildAssistant:
 
     def clean_qmake(self):
         return None
+
 
     def clean_cmake(self):
         return None
@@ -209,7 +213,7 @@ class BuildAssistant:
         return None
 
     def debug(self):
-        os.system(self.libexport_str + self.debug_options[self.cmd])
+        os.system(self.libexport_str + self.debug_options[self.current_command])
         return None
 
     def exec_qmake(self):
@@ -221,84 +225,34 @@ class BuildAssistant:
     def execute(self):
         return os.system(self.libexport_str + '../out/bin/test-list')
 
-    def wrong_option(self):
-        print 'Wrong option \'' + self.cmd + '\'!'
-        self.fn_help('ololo1')
+    def wrong_option(self, cmd):
+        print 'Wrong option \'' + cmd + '\'!'
+        self.fn_help()
         exit(1)
 
     def doxygen(self):
         print 'doxygen(): I\'m not implemented!'
-        return None
+        pass
 
     def doxygen_clean(self):
-        return None
+        pass
 
+    def process_cmd(self, cmd):
+        for option in self.options_dict:
+            if cmd in self.options_dict[option]['alias']:
+                # print 'yes'
+                self.current_command = cmd
+                self.options_dict[option]['func']()
+                return None
+        self.wrong_option(cmd)
+    pass
 
-# # Bind names to function calls
-# options = {
-# 'b': build_debug,
-# 'build': build_debug,
-#     'br': build_release,
-#     'build_release': build_release,
-#     'bd': build_debug,
-#     'build_debug': build_debug,
-#     ######################################
-#     'bc': build_debug,
-#     'build_cmake': build_debug,
-#     'bcr': build_release,
-#     'build_cmake_release': build_release,
-#     'bcd': build_debug,
-#     'build_cmake_debug': build_debug,
-#     ######################################
-#     'bq': build_debug,
-#     'build_qmake': build_debug,
-#     'bqr': build_release,
-#     'build_qmake_release': build_release,
-#     'bqd': build_debug,
-#     'build_qmake_debug': build_debug,
-#     ######################################
-#     'e': execute,
-#     'exec': execute,
-#     ######################################
-#     'h': fn_help,
-#     'help': fn_help,
-#     ######################################
-#     'c': clean,
-#     'clean': clean,
-#     ######################################
-#     'd': debug,
-#     'debug': debug,
-#     'd_gdb': debug,
-#     'debug_gdb': debug,
-#     'd_lldb': debug,
-#     'debug_lldb': debug,
-#     ######################################
-#     'dc': debug,
-#     'debug_cmake': debug,
-#     'dc_gdb': debug,
-#     'debug_cmake_gdb': debug,
-#     'dc_lldb': debug,
-#     'debug_cmake_lldb': debug,
-#     ######################################
-#     'dq': debug,
-#     'debug_qmake': debug,
-#     'dq_gdb': debug,
-#     'debug_qmake_gdb': debug,
-#     'dq_lldb': debug,
-#     'debug_qmake_lldb': debug,
-#     ######################################
-#     'doc': doxygen,
-#     'doxygen': doxygen
-# }
-#
-# # Set default function if name is not recognized
-# options = defaultdict(lambda: wrong_option, options)
-#
-# Process arguments except for first
-# for cmd in sys.argv:
-#     if cmd != sys.argv[0]:
-#         options[cmd](cmd)
+    def process_stdin(self):
+        for cmd in sys.argv:
+            if cmd != sys.argv[0]:
+                self.process_cmd(cmd)
+        pass
 
 
 ba1 = BuildAssistant()
-ba1.fn_help()
+ba1.process_stdin()
