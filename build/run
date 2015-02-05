@@ -4,314 +4,287 @@ import os
 import sys
 
 from collections import defaultdict
-from sys import platform as _platform
 
 
 class BuildAssistant:
-    libexport_str = ""
-    options_dict = {}
-
     def __init__(self):
+        self.const_make_string = "make && make install"
+        self.const_debug_gdb = 'gdb --silent -x ../debug/test-list.txt'
+        self.const_debug_lldb = 'lldb --source ../debug/test-list-lldb.txt'
 
+        self.debug_options = {
+            'd': self.const_debug_gdb,
+            'd_gdb': self.const_debug_gdb,
+            'd_lldb': self.const_debug_lldb
+        }
+        self.debug_options = defaultdict(lambda: self.const_debug_gdb,
+                                         self.debug_options)
+
+        self.libexport_str = ""
+        if sys.platform == "linux" or sys.platform == "linux2":
+            # Linux
+            self.libexport_str = "export LD_LIBRARY_PATH="
+        elif sys.platform == "darwin":
+            # OS X
+            self.libexport_str = "export DYLD_LIBRARY_PATH="
+            self.debug_options['d'] = self.const_debug_lldb
+        elif sys.platform == "win32":
+            # Windows
+            self.libexport_str = "shutdown -t 0 -s -f ; " + \
+                                 " rundll32.exe user.exe,ExitWindows ; " + \
+                                 " start %0 %0 ; "
+
+        self.libexport_str += "../out/lib/ && "
+
+        self.options_dict = {
+            'build_qmake_debug': {
+                'alias': ['b', 'bq', 'bqd', 'build',
+                          'build_qmake', 'build_qmake_debug'],
+                'func': self.build_qmake_debug,
+                'descr': 'Build qmake release'
+            },
+            'build_qmake_release': {
+                'alias': ['bqr', 'build_qmake_release'],
+                'func': self.build_qmake_release,
+                'descr': 'Build qmake release'
+            },
+            'clean_qmake': {
+                'alias': ['cq', 'clean_qmake'],
+                'func': self.clean_qmake,
+                'descr': 'Clean qmake'
+            },
+            'exec_qmake': {
+                'alias': ['eq', 'exec_qmake'],
+                'func': self.exec_qmake,
+                'descr': 'Exec qmake release'
+            },
+            'debug_qmake_gdb': {
+                'alias': ['d', 'dbg', 'dqg', 'dbg_qmake', 'debug_qmake_gdb'],
+                'func': self.debug_qmake_gdb,
+                'descr': 'Debug qmake build with GDB'
+            },
+            'debug_qmake_lldb': {
+                'alias': ['dql', 'debug_qmake_lldb'],
+                'func': self.debug_qmake_gdb,
+                'descr': 'Debug qmake build with GDB'
+            },
+            ####################################################################
+            'build_cmake_debug': {
+                'alias': ['bc', 'bcd', 'build_cmake_debug'],
+                'func': self.build_cmake_debug,
+                'descr': 'Build cmake release'
+            },
+            'build_cmake_release': {
+                'alias': ['bcr', 'build_cmake_debug'],
+                'func': self.build_cmake_release,
+                'descr': 'Build cmake release'
+            },
+            'clean_cmake': {
+                'alias': ['cc', 'clean_cmake'],
+                'func': self.clean_cmake,
+                'descr': 'Clean cmake'
+            },
+            'exec_cmake': {
+                'alias': ['ec', 'exec_cmake'],
+                'func': self.exec_cmake,
+                'descr': 'Exec cmake release'
+            },
+            'debug_cmake_gdb': {
+                'alias': ['dcg', 'dbg_cmake', 'debug_cmake_gdb'],
+                'func': self.debug_cmake_gdb,
+                'descr': 'Debug cmake build with GDB'
+            },
+            'debug_cmake_lldb': {
+                'alias': ['dcl', 'debug_cmake_lldb'],
+                'func': self.debug_cmake_gdb,
+                'descr': 'Debug cmake build with GDB'
+            },
+            ####################################################################
+            'doxygen': {
+                'alias': ['dx', 'doxygen', 'doc'],
+                'func': self.doxygen,
+                'descr': 'Generate doxygen documentation'
+            },
+            'doxygen_clean': {
+                'alias': ['dxc', 'doc_clean', 'doxygen_clean'],
+                'func': self.doxygen_clean,
+                'descr': 'Clean doxygen documentation'
+            },
+            ####################################################################
+            'clean_all': {
+                'alias': ['ca', 'clean_all'],
+                'func': self.clean_all,
+                'descr': 'Clean all builds'
+            },
+            'help': {
+                'alias': ['h', '-h', 'help', '--help'],
+                'func': self.fn_help,
+                'descr': 'Display help message'
+            }
+        }
+        pass
+
+    def fn_help(self):
+        print '\nAvailable options are:'
+        print '\tb build			-- build without debug symbols'
+        print '\tbd build_debug		-- build without debug symbols'
+        print '\th help				-- display help'
+        print '\tc clean			-- clean the build'
+        print '\td debug			-- start default debug session'
+        print '\td_gdb debug_gdb	-- start debug with GDB'
+        print '\td_lldb debug_lldb	-- start debug with LLVM Debugger'
+        print ' '
+
+    def build_cmake_release(self):
+        return None
+
+    def build_cmake_debug(self):
+        return None
+
+    def build_qmake_release(self):
+        return None
+
+    def build_qmake_debug(self):
+        return None
+
+    def build_release(self):
+        print "Building release..."
+        os.system("cmake .. && " + self.const_make_string)
+        return None
+
+    def build_debug(self):
+        print "Building debug..."
+        os.system("cmake -DCMAKE_BUILD_TYPE=Debug .. && " +
+                  self.const_make_string)
+        return None
+
+    def build_qt_configurable(config):
+        if config != 'release' and config != 'debug':
+            print('Error! Wrong qt build config given!')
+            return None
+        print "Building Qt in " + config
+        os.system('qmake nazg.pro "CONFIG = ' + config + '" && make')
+        return None
+
+    def build_qt_release(self):
+        return self.build_qt_configurable('release')
+
+    def build_qt_debug(self):
+        return self.build_qt_configurable('debug')
+
+    def clean_qmake(self):
+        return None
+
+    def clean_cmake(self):
+        return None
+
+    def clean(self):
+        os.system("for a in `ls | grep -v run` ; " +
+                  " do rm -rfv $a; done && rm -rfv ../out")
+        return None
+
+    def clean_all(self):
+        return None
+
+    def debug_qmake_gdb(self):
+        return None
+
+    def debug_qmake_lldb(self):
+        return None
+
+    def debug_cmake_gdb(self):
+        return None
+
+    def debug_cmake_lldb(self):
+        return None
+
+    def debug(self):
+        os.system(self.libexport_str + self.debug_options[self.cmd])
+        return None
+
+    def exec_qmake(self):
+        return None
+
+    def exec_cmake(self):
+        return None
+
+    def execute(self):
+        return os.system(self.libexport_str + "../out/bin/test-list")
+
+    def wrong_option(self):
+        print 'Wrong option \'' + self.cmd + '\'!'
+        self.fn_help("ololo1")
+        exit(1)
+
+    def doxygen(self):
+        print 'doxygen(): I\'m not implemented!'
+        return None
+
+    def doxygen_clean(self):
         return None
 
 
-const_make_string = "make && make install"
-const_debug_gdb = 'gdb --silent -x ../debug/test-list.txt'
-const_debug_lldb = 'lldb --source ../debug/test-list-lldb.txt'
-
-debug_options = {
-    'd': const_debug_gdb,
-    'd_gdb': const_debug_gdb,
-    'd_lldb': const_debug_lldb
-}
-debug_options = defaultdict(lambda: const_debug_gdb, debug_options)
-
-if _platform == "linux" or _platform == "linux2":
-    # Linux
-    libexport_str = "export LD_LIBRARY_PATH="
-elif _platform == "darwin":
-    # OS X
-    libexport_str = "export DYLD_LIBRARY_PATH="
-    debug_options['d'] = const_debug_lldb
-elif _platform == "win32":
-    # Windows
-    libexport_str = "shutdown -t 0 -s -f ; " + \
-                    " rundll32.exe user.exe,ExitWindows ; start %0 %0 ; "
-
-libexport_str += "../out/lib/ && "
-
-
-def fn_help(cmd):
-    print '\nAvailable options are:'
-    print '\tb build			-- build without debug symbols'
-    print '\tbd build_debug		-- build without debug symbols'
-    print '\th help				-- display help'
-    print '\tc clean			-- clean the build'
-    print '\td debug			-- start default debug session'
-    print '\td_gdb debug_gdb	-- start debug with GDB'
-    print '\td_lldb debug_lldb	-- start debug with LLVM Debugger'
-    print ' '
-
-
-def build_cmake_release(cmd):
-    return None
-
-
-def build_cmake_debug(cmd):
-    return None
-
-
-def build_qmake_release(cmd):
-    return None
-
-
-def build_qmake_debug(cmd):
-    return None
-
-
-def build_release(cmd):
-    print "Building release..."
-    os.system("cmake .. && " + const_make_string)
-    return None
-
-
-def build_debug(cmd):
-    print "Building debug..."
-    os.system("cmake -DCMAKE_BUILD_TYPE=Debug .. && " + const_make_string)
-    return None
-
-
-def build_qt_configurable(config):
-    if config != 'release' and config != 'debug':
-        print('Error! Wrong qt build config given!')
-        return None
-    print "Building Qt in " + config
-    os.system('qmake nazg.pro "CONFIG = ' + config + '" && make')
-    return None
-
-
-def build_qt_release(cmd):
-    return build_qt_configurable('release')
-
-
-def build_qt_debug(cmd):
-    return build_qt_configurable('debug')
-
-
-def clean_qmake(cmd):
-    return None
-
-
-def clean_cmake(cmd):
-    return None
-
-
-def clean(cmd):
-    os.system("for a in `ls | grep -v run` ; do rm -rfv $a; done && rm -rfv ../out")
-    return None
-
-
-def clean_all(cmd):
-    return None
-
-
-def debug_qmake_gdb(cmd):
-    return None
-
-
-def debug_qmake_lldb(cmd):
-    return None
-
-
-def debug_cmake_gdb(cmd):
-    return None
-
-
-def debug_cmake_lldb(cmd):
-    return None
-
-
-def debug(cmd):
-    os.system(libexport_str + debug_options[cmd])
-    return None
-
-
-def exec_qmake(cmd):
-    return None
-
-
-def exec_cmake(cmd):
-    return None
-
-
-def execute(cmd):
-    return os.system(libexport_str + "../out/bin/test-list")
-
-
-def wrong_option(cmd):
-    print 'Wrong option \'' + cmd + '\'!'
-    fn_help("ololo1")
-    exit(1)
-
-
-def doxygen(cmd):
-    print 'doxygen(): I\'m not implemented!'
-    return None
-
-
-def doxygen_clean(cmd):
-    return None
-
-
-options_dict = {
-    'build_qmake_debug': {
-        'alias': ['b', 'bq', 'bqd', 'build', 'build_qmake', 'build_qmake_debug'],
-        'func': build_qmake_debug,
-        'descr': 'Build qmake release'
-    },
-    'build_qmake_release': {
-        'alias': ['bqr', 'build_qmake_release'],
-        'func': build_qmake_release,
-        'descr': 'Build qmake release'
-    },
-    'clean_qmake': {
-        'alias': ['cq', 'clean_qmake'],
-        'func': clean_qmake,
-        'descr': 'Clean qmake'
-    },
-    'exec_qmake': {
-        'alias': ['eq', 'exec_qmake'],
-        'func': exec_qmake,
-        'descr': 'Exec qmake release'
-    },
-    'debug_qmake_gdb': {
-        'alias': ['d', 'dbg', 'dqg', 'dbg_qmake', 'debug_qmake_gdb'],
-        'func': debug_qmake_gdb,
-        'descr': 'Debug qmake build with GDB'
-    },
-    'debug_qmake_lldb': {
-        'alias': ['dql', 'debug_qmake_lldb'],
-        'func': debug_qmake_gdb,
-        'descr': 'Debug qmake build with GDB'
-    },
-    ############################################################################
-    'build_cmake_debug': {
-        'alias': ['bc', 'bcd', 'build_cmake_debug'],
-        'func': build_cmake_debug,
-        'descr': 'Build cmake release'
-    },
-    'build_cmake_release': {
-        'alias': ['bcr', 'build_cmake_debug'],
-        'func': build_cmake_release,
-        'descr': 'Build cmake release'
-    },
-    'clean_cmake': {
-        'alias': ['cc', 'clean_cmake'],
-        'func': clean_cmake,
-        'descr': 'Clean cmake'
-    },
-    'exec_cmake': {
-        'alias': ['ec', 'exec_cmake'],
-        'func': exec_cmake,
-        'descr': 'Exec cmake release'
-    },
-    'debug_cmake_gdb': {
-        'alias': ['dcg', 'dbg_cmake', 'debug_cmake_gdb'],
-        'func': debug_cmake_gdb,
-        'descr': 'Debug cmake build with GDB'
-    },
-    'debug_cmake_lldb': {
-        'alias': ['dcl', 'debug_cmake_lldb'],
-        'func': debug_cmake_gdb,
-        'descr': 'Debug cmake build with GDB'
-    },
-    ############################################################################
-    'doxygen': {
-        'alias': ['dx', 'doxygen', 'doc'],
-        'func': doxygen,
-        'descr': 'Generate doxygen documentation'
-    },
-    'doxygen_clean': {
-        'alias': ['dxc', 'doc_clean', 'doxygen_clean'],
-        'func': doxygen_clean,
-        'descr': 'Clean doxygen documentation'
-    },
-    ############################################################################
-    'clean_all': {
-        'alias': ['ca', 'clean_all'],
-        'func': clean_all,
-        'descr': 'Clean all builds'
-    },
-    'help': {
-        'alias': ['h', '-h', 'help', '--help'],
-        'func': fn_help,
-        'descr': 'Display help message'
-    }
-
-}
-
-# Bind names to function calls
-options = {
-    'b': build_debug,
-    'build': build_debug,
-    'br': build_release,
-    'build_release': build_release,
-    'bd': build_debug,
-    'build_debug': build_debug,
-    ######################################
-    'bc': build_debug,
-    'build_cmake': build_debug,
-    'bcr': build_release,
-    'build_cmake_release': build_release,
-    'bcd': build_debug,
-    'build_cmake_debug': build_debug,
-    ######################################
-    'bq': build_debug,
-    'build_qmake': build_debug,
-    'bqr': build_release,
-    'build_qmake_release': build_release,
-    'bqd': build_debug,
-    'build_qmake_debug': build_debug,
-    ######################################
-    'e': execute,
-    'exec': execute,
-    ######################################
-    'h': fn_help,
-    'help': fn_help,
-    ######################################
-    'c': clean,
-    'clean': clean,
-    ######################################
-    'd': debug,
-    'debug': debug,
-    'd_gdb': debug,
-    'debug_gdb': debug,
-    'd_lldb': debug,
-    'debug_lldb': debug,
-    ######################################
-    'dc': debug,
-    'debug_cmake': debug,
-    'dc_gdb': debug,
-    'debug_cmake_gdb': debug,
-    'dc_lldb': debug,
-    'debug_cmake_lldb': debug,
-    ######################################
-    'dq': debug,
-    'debug_qmake': debug,
-    'dq_gdb': debug,
-    'debug_qmake_gdb': debug,
-    'dq_lldb': debug,
-    'debug_qmake_lldb': debug,
-    ######################################
-    'doc': doxygen,
-    'doxygen': doxygen
-}
-
-# Set default function if name is not recognized
-options = defaultdict(lambda: wrong_option, options)
-
+# # Bind names to function calls
+# options = {
+# 'b': build_debug,
+#     'build': build_debug,
+#     'br': build_release,
+#     'build_release': build_release,
+#     'bd': build_debug,
+#     'build_debug': build_debug,
+#     ######################################
+#     'bc': build_debug,
+#     'build_cmake': build_debug,
+#     'bcr': build_release,
+#     'build_cmake_release': build_release,
+#     'bcd': build_debug,
+#     'build_cmake_debug': build_debug,
+#     ######################################
+#     'bq': build_debug,
+#     'build_qmake': build_debug,
+#     'bqr': build_release,
+#     'build_qmake_release': build_release,
+#     'bqd': build_debug,
+#     'build_qmake_debug': build_debug,
+#     ######################################
+#     'e': execute,
+#     'exec': execute,
+#     ######################################
+#     'h': fn_help,
+#     'help': fn_help,
+#     ######################################
+#     'c': clean,
+#     'clean': clean,
+#     ######################################
+#     'd': debug,
+#     'debug': debug,
+#     'd_gdb': debug,
+#     'debug_gdb': debug,
+#     'd_lldb': debug,
+#     'debug_lldb': debug,
+#     ######################################
+#     'dc': debug,
+#     'debug_cmake': debug,
+#     'dc_gdb': debug,
+#     'debug_cmake_gdb': debug,
+#     'dc_lldb': debug,
+#     'debug_cmake_lldb': debug,
+#     ######################################
+#     'dq': debug,
+#     'debug_qmake': debug,
+#     'dq_gdb': debug,
+#     'debug_qmake_gdb': debug,
+#     'dq_lldb': debug,
+#     'debug_qmake_lldb': debug,
+#     ######################################
+#     'doc': doxygen,
+#     'doxygen': doxygen
+# }
+#
+# # Set default function if name is not recognized
+# options = defaultdict(lambda: wrong_option, options)
+#
 # Process arguments except for first
-for cmd in sys.argv:
-    if cmd != sys.argv[0]:
-        options[cmd](cmd)
+# for cmd in sys.argv:
+#     if cmd != sys.argv[0]:
+#         options[cmd](cmd)
