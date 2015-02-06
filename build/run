@@ -15,6 +15,12 @@ def rmrf(path):
     return None
 
 
+def rm_file_if_exists(file):
+    if os.path.isfile(file):
+        os.remove(file)
+    return None
+
+
 class BuildAssistant:
     def __init__(self):
         self.current_command = ''
@@ -165,12 +171,6 @@ class BuildAssistant:
     def build_cmake_debug(self):
         return None
 
-    def build_qmake_release(self):
-        return None
-
-    def build_qmake_debug(self):
-        return None
-
     def build_release(self):
         print 'Building release...'
         os.system('cmake .. && ' + self.const_make_string)
@@ -188,20 +188,20 @@ class BuildAssistant:
             print('Error! Wrong qt build config given!')
             return None
         print 'Building Qt in ' + config
-        os.system('qmake nazg.pro "CONFIG = ' + config + '" && make')
+        os.system('cd qmake && qmake nazg.pro "CONFIG = ' + config + '" && make')
         return None
 
-    def build_qt_release(self):
+    def build_qmake_release(self):
         return self.build_qt_configurable('release')
 
-    def build_qt_debug(self):
+    def build_qmake_debug(self):
         return self.build_qt_configurable('debug')
 
     def clean_qmake(self):
         makefilse = ['qmake/Makefile', 'qmake/libnazg/Makefile',
                      'qmake/tests/Makefile', 'qmake/tests/test-list/Makefile']
         for mf in makefilse:
-            os.remove(mf)
+            rm_file_if_exists(mf)
         rmrf(self.const_dir_out_qmake)
         return None
 
