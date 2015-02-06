@@ -15,21 +15,22 @@ def rmrf(path):
     return None
 
 
-def rm_file_if_exists(file):
-    if os.path.isfile(file):
-        os.remove(file)
+def rm_file_if_exists(filename):
+    if os.path.isfile(filename):
+        os.remove(filename)
     return None
 
 
 class BuildAssistant:
     def __init__(self):
+        self.libexport_str = ''
         self.current_command = ''
+        self.build_systems = ['qmake', 'cmake']
+        self.build_modes = ['release', 'debug']
         self.const_make_string = 'make && make install'
         self.const_debug_gdb = 'gdb --silent -x ../debug/test-list.txt'
         self.const_debug_lldb = 'lldb --source ../debug/test-list-lldb.txt'
         self.const_dir_out = '../out'
-        self.const_dir_out_qmake = self.const_dir_out + '/qmake'
-        self.const_dir_out_cmake = self.const_dir_out + '/cmake'
 
         self.debug_options = {
             'd': self.const_debug_gdb,
@@ -38,22 +39,6 @@ class BuildAssistant:
         }
         self.debug_options = defaultdict(lambda: self.const_debug_gdb,
                                          self.debug_options)
-
-        self.libexport_str = ''
-        if sys.platform == 'linux' or sys.platform == 'linux2':
-            # Linux
-            self.libexport_str = 'export LD_LIBRARY_PATH='
-        elif sys.platform == 'darwin':
-            # OS X
-            self.libexport_str = 'export DYLD_LIBRARY_PATH='
-            self.debug_options['d'] = self.const_debug_lldb
-        elif sys.platform == 'win32':
-            # Windows
-            self.libexport_str = 'shutdown -t 0 -s -f ; ' + \
-                                 ' rundll32.exe user.exe,ExitWindows ; ' + \
-                                 ' start %0 %0 ; '
-
-        self.libexport_str += '../out/lib/ && '
 
         self.options_dict = {
             '01_build_qmake_debug': {
@@ -146,6 +131,39 @@ class BuildAssistant:
                                'descr': 'Eror happened'}}, self.options_dict)
         pass
 
+    def __get_dir_out_bs(self, build_system):
+        if not (build_system in self.build_systems):
+            sys.exit(1)
+        return self.const_dir_out + '/' + build_system
+
+    def __get_dir_out_bs_mode(self, build_system, build_mode):
+        if not (build_mode in self.build_modes):
+            sys.exit(1)
+        return self.__get_dir_out_bs(build_system) + '/' + build_mode
+
+    def __set_libexport_string(self, build_system, build_mode):
+        if not (build_system in self.build_systems) or \
+                not (build_mode in self.build_modes):
+            print('Error! Internal params: build system = \'' + build_system
+                  + '\'; build mode = \'' + build_mode + '\';')
+            sys.exit(1)
+        if sys.platform == 'linux' or sys.platform == 'linux2':
+            # Linux
+            self.libexport_str = 'export LD_LIBRARY_PATH='
+        elif sys.platform == 'darwin':
+            # OS X
+            self.libexport_str = 'export DYLD_LIBRARY_PATH='
+            self.debug_options['d'] = self.const_debug_lldb
+        elif sys.platform == 'win32':
+            # Windows
+            self.libexport_str = 'shutdown -t 0 -s -f ; ' + \
+                                 ' rundll32.exe user.exe,ExitWindows ; ' + \
+                                 ' start %0 %0 ; '
+
+        self.libexport_str += '{0}/lib/ && '.format(
+            self.__get_out_dir(build_system, build_mode))
+        pass
+
     def fn_help(self):
         print '\nAvailable options are:'
         buf_alias = {}
@@ -182,13 +200,13 @@ class BuildAssistant:
                   self.const_make_string)
         return None
 
-    @staticmethod
-    def build_qt_configurable(config):
-        if config != 'release' and config != 'debug':
+    def build_qt_configurable(self, config):
+        if not (config in self.build_modes):
             print('Error! Wrong qt build config given!')
             return None
         print 'Building Qt in ' + config
-        os.system('cd qmake && qmake nazg.pro "CONFIG = ' + config + '" && make')
+        os.system(
+            'cd qmake && qmake nazg.pro "CONFIG = ' + config + '" && make')
         return None
 
     def build_qmake_release(self):
@@ -202,11 +220,12 @@ class BuildAssistant:
                      'qmake/tests/Makefile', 'qmake/tests/test-list/Makefile']
         for mf in makefilse:
             rm_file_if_exists(mf)
-        rmrf(self.const_dir_out_qmake)
+
+        rmrf(self.__get_dir_out_bs('qmake'))
         return None
 
     def clean_cmake(self):
-        rmrf(self.const_dir_out_cmake)
+        rmrf(self.__get_dir_out_bs('cmake'))
         return None
 
     def clean(self):
@@ -265,6 +284,7 @@ class BuildAssistant:
                 self.options_dict[option]['func']()
                 return None
         self.wrong_option(cmd)
+
     pass
 
     def process_stdin(self):

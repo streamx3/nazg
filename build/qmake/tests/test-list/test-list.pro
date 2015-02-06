@@ -5,7 +5,7 @@ CONFIG -= qt
 
 PRJ_ROOT = $$PWD/../../../../
 SRC_DIR = $$PRJ_ROOT/tests/test-list/
-OUT_PRFX = $$PRJ_ROOT/out/qt/
+OUT_PRFX = $$PRJ_ROOT/out/qmake/
 release: OUT_DIR = $$OUT_PRFX/release/
 debug:   OUT_DIR = $$OUT_PRFX/debug/
 
