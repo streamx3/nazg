@@ -10,5 +10,5 @@ set(LIBRARY_OUTPUT_PATH "lib")
 
 include_directories(include)
 
-add_subdirectory(src)
+add_subdirectory(libnazg)
 add_subdirectory(tests)

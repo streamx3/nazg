@@ -6,18 +6,19 @@ import sys
 from collections import defaultdict
 
 
-def rmrf(path):
-    for root, dirs, files in os.walk(path, topdown=False):
-        for name in files:
-            os.remove(os.path.join(root, name))
-        for name in dirs:
-            os.rmdir(os.path.join(root, name))
-    return None
-
-
-def rm_file_if_exists(filename):
-    if os.path.isfile(filename):
-        os.remove(filename)
+def rm_smart(path):
+    if os.path.exists(path):
+        if os.path.isfile(path):
+            os.remove(path)
+        elif os.path.isdir:
+            for root, dirs, files in os.walk(path, topdown=False):
+                for name in files:
+                    os.remove(os.path.join(root, name))
+                for name in dirs:
+                    os.rmdir(os.path.join(root, name))
+            os.rmdir(path)
+    else:
+        sys.stderr.write('Not found: \'' + path + '\'\n')
     return None
 
 
@@ -26,6 +27,16 @@ class BuildAssistant:
         self.libexport_str = ''
         self.current_command = ''
         self.build_systems = ['qmake', 'cmake']
+        self.build_rubbish = {'qmake': ['qmake/Makefile',
+                                        'qmake/libnazg/Makefile',
+                                        'qmake/tests/Makefile',
+                                        'qmake/tests/test-list/Makefile'],
+                              'cmake': ['cmake/CMakeCache.txt',
+                                        'cmake/CMakeFiles/',
+                                        'cmake/CMakeFiles/',
+                                        'cmake/libnazg/CMakeFiles/',
+                                        'cmake/tests/CMakeFiles/',
+                                        'cmake/tests/test-list/CMakeFiles/']}
         self.build_modes = ['release', 'debug']
         self.const_make_string = 'make && make install'
         self.const_debug_gdb = 'gdb --silent -x ../debug/test-list.txt'
@@ -144,8 +155,9 @@ class BuildAssistant:
     def __set_libexport_string(self, build_system, build_mode):
         if not (build_system in self.build_systems) or \
                 not (build_mode in self.build_modes):
-            print('Error! Internal params: build system = \'' + build_system
-                  + '\'; build mode = \'' + build_mode + '\';')
+            sys.stderr.write('Error! Internal params: build system = \'' +
+                             build_system + '\'; build mode = \'' +
+                             build_mode + '\';')
             sys.exit(1)
         if sys.platform == 'linux' or sys.platform == 'linux2':
             # Linux
@@ -216,19 +228,26 @@ class BuildAssistant:
         return self.build_qt_configurable('debug')
 
     def clean_qmake(self):
-        makefilse = ['qmake/Makefile', 'qmake/libnazg/Makefile',
-                     'qmake/tests/Makefile', 'qmake/tests/test-list/Makefile']
-        for mf in makefilse:
-            rm_file_if_exists(mf)
-
-        rmrf(self.__get_dir_out_bs('qmake'))
+        self.clean_configurable('qmake')
         return None
 
     def clean_cmake(self):
-        rmrf(self.__get_dir_out_bs('cmake'))
+        self.clean_configurable('cmake')
         return None
 
-    def clean(self):
+    def clean_configurable(self, build_system):
+        if build_system in self.build_systems:
+            for rubbish in self.build_rubbish[build_system]:
+                rm_smart(rubbish)
+            rm_smart(self.__get_dir_out_bs(build_system))
+        else:
+            sys.stderr.write('Build system \'' + build_system +
+                             '\' not found!\n')
+            sys.exit(1)
+        return None
+
+    @staticmethod
+    def clean():
         os.system('for a in `ls | grep -v run` ; ' +
                   ' do rm -rfv $a; done && rm -rfv ../out')
         return None
@@ -236,7 +255,7 @@ class BuildAssistant:
     def clean_all(self):
         self.clean_cmake()
         self.clean_qmake()
-        rmrf(self.const_dir_out)
+        rm_smart(self.const_dir_out)
         return None
 
     def debug_qmake_gdb(self):
@@ -272,7 +291,7 @@ class BuildAssistant:
         return os.system(self.libexport_str + '../out/bin/test-list')
 
     def wrong_option(self, cmd):
-        print 'Wrong option \'' + cmd + '\'!'
+        sys.stderr.write('Wrong option \'' + cmd + '\'!')
         self.fn_help()
         exit(1)
 
