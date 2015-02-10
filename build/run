@@ -161,7 +161,7 @@ class BuildAssistant:
                                  ' start %0 %0 ; '
 
         self.libexport_str += '{0}/lib/ && '.format(
-            self.__get_out_dir(build_system, build_mode))
+            self.__get_dir_out_bs_mode(build_system, build_mode))
         pass
 
     def fn_help(self):
@@ -256,6 +256,13 @@ class BuildAssistant:
         return None
 
     def exec_qmake(self):
+        for mode in self.build_modes:
+            self.__set_libexport_string('qmake', mode)
+            execstr = self.libexport_str + \
+                      self.__get_dir_out_bs_mode('qmake', mode) + \
+                      '/tests/test-list'
+            print('execstr = \'' + execstr + '\'')
+            os.system(execstr)
         return None
 
     def exec_cmake(self):

@@ -26,5 +26,5 @@ HEADERS += \
     $$HDR_DIR/nz_memory.h \
     $$HDR_DIR/nz_space.h
 
-DESTDIR = $$OUT_DIR/libnazg/
+DESTDIR = $$OUT_DIR/lib/
 OBJECTS_DIR = $$DESTDIR/.obj

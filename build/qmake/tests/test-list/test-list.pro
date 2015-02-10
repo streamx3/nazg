@@ -15,7 +15,7 @@ SOURCES += $$SRC_DIR/*.c
 
 HEADERS += $$SRC_DIR/*.h
 
-DESTDIR = $$OUT_DIR/tests/test-list/
+DESTDIR = $$OUT_DIR/tests/
 OBJECTS_DIR = $$DESTDIR/.obj
 
-LIBS += -L $$OUT_DIR/libnazg/ -lnazg
+LIBS += -L $$OUT_DIR/lib/ -lnazg
