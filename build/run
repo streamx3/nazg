@@ -27,6 +27,9 @@ class BuildAssistant:
     def __init__(self):
         self.libexport_str = ''
         self.current_command = ''
+        self.debuggers = {'gdb': ' --silent -x ../debug/test-list.txt ',
+                          'lldb': ' --source ../debug/test-list-lldb.txt '}
+        self.build_modes = ['release', 'debug']
         self.build_systems = ['qmake', 'cmake']
         self.build_rubbish = {'qmake': ['qmake/Makefile',
                                         'qmake/libnazg/Makefile',
@@ -53,10 +56,9 @@ class BuildAssistant:
                                         'cmake/tests/test-list/cmake/',
                                         'cmake/tests/test-list/' +
                                         'cmake_install.cmake']}
-        self.build_modes = ['release', 'debug']
         self.const_make_string = 'make && make install'
-        self.const_debug_gdb = 'gdb --silent -x ../debug/test-list.txt'
-        self.const_debug_lldb = 'lldb --source ../debug/test-list-lldb.txt'
+        self.const_debug_gdb = 'gdb --silent -x ../debug/test-list.txt '
+        self.const_debug_lldb = 'lldb --source ../debug/test-list-lldb.txt '
         self.const_dir_out = '../out'
 
         self.debug_options = {
@@ -71,64 +73,76 @@ class BuildAssistant:
             '01_build_qmake_debug': {
                 'alias': ['b', 'bq', 'bqd', 'build',
                           'build_qmake', 'build_qmake_debug'],
-                'func': self.build_qmake_debug,
+                'func': self.build_qmake_configurable,
+                'args': 'debug',
                 'descr': 'Build qmake release'
             },
             '02_build_qmake_release': {
                 'alias': ['bqr', 'build_qmake_release'],
-                'func': self.build_qmake_release,
+                'func': self.build_qmake_configurable,
+                'args': 'release',
                 'descr': 'Build qmake release'
             },
             '31_clean_qmake': {
                 'alias': ['cq', 'clean_qmake'],
-                'func': self.clean_qmake,
+                'func': self.clean_configurable,
+                'args': 'qmake',
                 'descr': 'Clean qmake build'
             },
             '21_exec_qmake': {
                 'alias': ['eq', 'exec_qmake'],
-                'func': self.exec_qmake,
+                'func': self.exec_configurable,
+                'args': 'qmake',
                 'descr': 'Exec qmake build'
             },
             '11_debug_qmake_gdb': {
                 'alias': ['d', 'dbg', 'dqg', 'dbg_qmake', 'debug_qmake_gdb'],
-                'func': self.debug_qmake_gdb,
+                'func': self.debug_configurable,
+                'args': ('qmake', 'gdb'),
                 'descr': 'Debug qmake build with GDB'
             },
             '12_debug_qmake_lldb': {
                 'alias': ['dql', 'debug_qmake_lldb'],
-                'func': self.debug_qmake_gdb,
-                'descr': 'Debug qmake build with GDB'
+                'func': self.debug_configurable,
+                'args': ('qmake', 'lldb'),
+                'descr': 'Debug qmake build with LLDB'
             },
             ####################################################################
             '03_build_cmake_debug': {
                 'alias': ['bc', 'bcd', 'build_cmake_debug'],
-                'func': self.build_cmake_debug,
+                'func': self.build_cmake_configurable,
+                'args': 'debug',
                 'descr': 'Build cmake release'
             },
             '04_build_cmake_release': {
                 'alias': ['bcr', 'build_cmake_debug'],
-                'func': self.build_cmake_release,
+                'func': self.build_cmake_configurable,
+                'args': 'release',
                 'descr': 'Build cmake release'
             },
             '33_clean_cmake': {
                 'alias': ['cc', 'clean_cmake'],
-                'func': self.clean_cmake,
+                'func': self.clean_configurable,
+                'args': 'cmake',
                 'descr': 'Clean cmake build'
             },
             '23_exec_cmake': {
                 'alias': ['ec', 'exec_cmake'],
-                'func': self.exec_cmake,
+                'func': self.exec_configurable,
+                'args': 'cmake',
                 'descr': 'Exec cmake build'
             },
             '13_debug_cmake_gdb': {
                 'alias': ['dcg', 'dbg_cmake', 'debug_cmake_gdb'],
-                'func': self.debug_cmake_gdb,
+                'func': self.debug_configurable,
+                'args': ('cmake', 'gdb'),
                 'descr': 'Debug cmake build with GDB'
             },
             '14_debug_cmake_lldb': {
                 'alias': ['dcl', 'debug_cmake_lldb'],
-                'func': self.debug_cmake_gdb,
-                'descr': 'Debug cmake build with GDB'
+                'func': self.debug_configurable,
+                'args': ('cmake', 'gdb'),
+                'descr': 'Debug cmake build with LLDB'
             },
             ####################################################################
             '88_doxygen': {
@@ -204,7 +218,6 @@ class BuildAssistant:
             maxlen = len(buf_alias[option]) if len(buf_alias[option]) > maxlen \
                 else maxlen
         for option in sorted(buf_alias.iterkeys()):
-            # print option
             assert isinstance(buf_alias[option], str)
             buf_alias[option] = buf_alias[option].ljust(maxlen, ' ')
             print('  ' + buf_alias[option] + ' -- ' +
@@ -220,14 +233,6 @@ class BuildAssistant:
                 ' . && ' + self.const_make_string)
         return None
 
-    def build_cmake_release(self):
-        self.build_cmake_configurable('release')
-        return None
-
-    def build_cmake_debug(self):
-        self.build_cmake_configurable('debug')
-        return None
-
     def build_qmake_configurable(self, config):
         if not (config in self.build_modes):
             print('Error! Wrong qt build config given!')
@@ -235,20 +240,6 @@ class BuildAssistant:
         print('Building Qt in ' + config)
         os.system(
             'cd qmake && qmake nazg.pro "CONFIG = ' + config + '" && make')
-        return None
-
-    def build_qmake_release(self):
-        return self.build_qmake_configurable('release')
-
-    def build_qmake_debug(self):
-        return self.build_qmake_configurable('debug')
-
-    def clean_qmake(self):
-        self.clean_configurable('qmake')
-        return None
-
-    def clean_cmake(self):
-        self.clean_configurable('cmake')
         return None
 
     def clean_configurable(self, build_system):
@@ -263,21 +254,23 @@ class BuildAssistant:
         return None
 
     def clean_all(self):
-        self.clean_cmake()
-        self.clean_qmake()
+        for bs in self.build_systems:
+            self.clean_configurable(bs)
         rm_smart(self.const_dir_out)
         return None
 
-    def debug_qmake_gdb(self):
-        return None
-
-    def debug_qmake_lldb(self):
-        return None
-
-    def debug_cmake_gdb(self):
-        return None
-
-    def debug_cmake_lldb(self):
+    def debug_configurable(self, argt):
+        build_system = argt[0]
+        debugger = argt[1]
+        if (build_system in self.build_systems) and \
+                (debugger in self.debuggers):
+            self.__set_libexport_string(build_system, 'debug')
+            execstr = (self.libexport_str + '' +
+                       debugger + self.debuggers[debugger] +
+                       self.__get_dir_out_bs_mode(build_system, 'debug') +
+                       '/tests/test-list')
+            print('execstr = ' + execstr)
+            # os.system(execstr)
         return None
 
     def debug(self):
@@ -293,14 +286,6 @@ class BuildAssistant:
                            '/tests/test-list')
                 print('execstr = \'' + execstr + '\'')
                 os.system(execstr)
-        return None
-
-    def exec_qmake(self):
-        self.exec_configurable('qmake')
-        return None
-
-    def exec_cmake(self):
-        self.exec_configurable('cmake')
         return None
 
     def wrong_option(self, cmd):
@@ -319,9 +304,14 @@ class BuildAssistant:
         for option in self.options_dict:
             if cmd in self.options_dict[option]['alias']:
                 self.current_command = cmd
-                self.options_dict[option]['func']()
+                if 'args' in self.options_dict[option]:
+                    self.options_dict[option]['func'](
+                        self.options_dict[option]['args'])
+                else:
+                    self.options_dict[option]['func']()
                 return None
         self.wrong_option(cmd)
+
     pass
 
     def process_stdin(self):
