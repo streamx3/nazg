@@ -2,11 +2,13 @@ cmake_minimum_required(VERSION 2.8)
 
 project(test-list)
 
-set(LIST_TEST_HEADERS	tests_nz_error.h
-						tests_nz_list.h)
-set(LIST_TEST_SOURCES	tests_nz_error.c
-						tests_nz_list.c
-						main.c)
+set(SRC_PREFIX ${NAZG_TESTS_DIR}test-list/)
+
+set(LIST_TEST_HEADERS	${SRC_PREFIX}tests_nz_error.h
+						${SRC_PREFIX}tests_nz_list.h)
+set(LIST_TEST_SOURCES	${SRC_PREFIX}tests_nz_error.c
+						${SRC_PREFIX}tests_nz_list.c
+						${SRC_PREFIX}main.c)
 
 add_executable(test-list ${LIST_TEST_HEADERS}
 						 ${LIST_TEST_SOURCES})

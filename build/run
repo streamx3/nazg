@@ -37,7 +37,19 @@ class BuildAssistant:
                                         'cmake/CMakeFiles/',
                                         'cmake/libnazg/CMakeFiles/',
                                         'cmake/tests/CMakeFiles/',
-                                        'cmake/tests/test-list/CMakeFiles/']}
+                                        'cmake/tests/test-list/CMakeFiles/',
+                                        'cmake/Makefile',
+                                        'cmake/cmake_install.cmake',
+                                        'cmake/install_manifest.txt',
+                                        'cmake/libnazg/Makefile',
+                                        'cmake/libnazg/cmake_install.cmake',
+                                        'cmake/tests/Makefile',
+                                        'cmake/tests/cmake_install.cmake',
+                                        'cmake/tests/test-list/Makefile',
+                                        'cmake/tests/test-list/bin/',
+                                        'cmake/tests/test-list/cmake/',
+                                        'cmake/tests/test-list/' +
+                                        'cmake_install.cmake']}
         self.build_modes = ['release', 'debug']
         self.const_make_string = 'make && make install'
         self.const_debug_gdb = 'gdb --silent -x ../debug/test-list.txt'
@@ -178,7 +190,7 @@ class BuildAssistant:
         pass
 
     def fn_help(self):
-        print '\nAvailable options are:'
+        print('\nAvailable options are:')
         buf_alias = {}
         maxlen = 0
         for option in self.options_dict:
@@ -192,41 +204,41 @@ class BuildAssistant:
             # print option
             assert isinstance(buf_alias[option], str)
             buf_alias[option] = buf_alias[option].ljust(maxlen, ' ')
-            print '  ' + buf_alias[option] + ' -- ' + \
-                  self.options_dict[option]['descr']
+            print('  ' + buf_alias[option] + ' -- ' + \
+                  self.options_dict[option]['descr'])
         pass
 
+    def build_cmake_configurable(self, mode):
+        cmake_modes = {'debug': 'Debug',
+                       'release': 'Release'}
+        if mode in self.build_modes:
+            os.system(
+                'cd cmake && cmake -DCMAKE_BUILD_TYPE=' + cmake_modes[mode] +
+                ' . && ' + self.const_make_string)
+        return None
+
     def build_cmake_release(self):
+        self.build_cmake_configurable('release')
         return None
 
     def build_cmake_debug(self):
+        self.build_cmake_configurable('debug')
         return None
 
-    def build_release(self):
-        print 'Building release...'
-        os.system('cmake .. && ' + self.const_make_string)
-        return None
-
-    def build_debug(self):
-        print 'Building debug...'
-        os.system('cmake -DCMAKE_BUILD_TYPE=Debug .. && ' +
-                  self.const_make_string)
-        return None
-
-    def build_qt_configurable(self, config):
+    def build_qmake_configurable(self, config):
         if not (config in self.build_modes):
             print('Error! Wrong qt build config given!')
             return None
-        print 'Building Qt in ' + config
+        print('Building Qt in ' + config)
         os.system(
             'cd qmake && qmake nazg.pro "CONFIG = ' + config + '" && make')
         return None
 
     def build_qmake_release(self):
-        return self.build_qt_configurable('release')
+        return self.build_qmake_configurable('release')
 
     def build_qmake_debug(self):
-        return self.build_qt_configurable('debug')
+        return self.build_qmake_configurable('debug')
 
     def clean_qmake(self):
         self.clean_configurable('qmake')
@@ -297,7 +309,7 @@ class BuildAssistant:
         exit(1)
 
     def doxygen(self):
-        print 'doxygen(): I\'m not implemented!'
+        print('doxygen(): I\'m not implemented!')
         pass
 
     def doxygen_clean(self):
