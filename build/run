@@ -262,12 +262,6 @@ class BuildAssistant:
             sys.exit(1)
         return None
 
-    @staticmethod
-    def clean():
-        os.system('for a in `ls | grep -v run` ; ' +
-                  ' do rm -rfv $a; done && rm -rfv ../out')
-        return None
-
     def clean_all(self):
         self.clean_cmake()
         self.clean_qmake()
@@ -309,9 +303,6 @@ class BuildAssistant:
         self.exec_configurable('cmake')
         return None
 
-    def execute(self):
-        return os.system(self.libexport_str + '../out/bin/test-list')
-
     def wrong_option(self, cmd):
         sys.stderr.write('Wrong option \'' + cmd + '\'!')
         self.fn_help()
@@ -327,12 +318,10 @@ class BuildAssistant:
     def process_cmd(self, cmd):
         for option in self.options_dict:
             if cmd in self.options_dict[option]['alias']:
-                # print 'yes'
                 self.current_command = cmd
                 self.options_dict[option]['func']()
                 return None
         self.wrong_option(cmd)
-
     pass
 
     def process_stdin(self):
