@@ -41,6 +41,8 @@ class BuildAssistant:
                                         'cmake/Makefile',
                                         'cmake/cmake_install.cmake',
                                         'cmake/install_manifest.txt',
+                                        'cmake/libnazg/cmake',
+                                        'cmake/libnazg/lib',
                                         'cmake/libnazg/Makefile',
                                         'cmake/libnazg/cmake_install.cmake',
                                         'cmake/tests/Makefile',
