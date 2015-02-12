@@ -49,6 +49,7 @@ class BuildAssistant:
                                         'cmake/tests/cmake_install.cmake',
                                         'cmake/tests/test-list/Makefile',
                                         'cmake/tests/test-list/bin/',
+                                        'cmake/tests/test-list/tests/',
                                         'cmake/tests/test-list/cmake/',
                                         'cmake/tests/test-list/' +
                                         'cmake_install.cmake']}
@@ -206,7 +207,7 @@ class BuildAssistant:
             # print option
             assert isinstance(buf_alias[option], str)
             buf_alias[option] = buf_alias[option].ljust(maxlen, ' ')
-            print('  ' + buf_alias[option] + ' -- ' + \
+            print('  ' + buf_alias[option] + ' -- ' +
                   self.options_dict[option]['descr'])
         pass
 
@@ -289,17 +290,23 @@ class BuildAssistant:
         os.system(self.libexport_str + self.debug_options[self.current_command])
         return None
 
+    def exec_configurable(self, build_system):
+        if build_system in self.build_systems:
+            for mode in self.build_modes:
+                self.__set_libexport_string(build_system, mode)
+                execstr = (self.libexport_str +
+                           self.__get_dir_out_bs_mode(build_system, mode) +
+                           '/tests/test-list')
+                print('execstr = \'' + execstr + '\'')
+                os.system(execstr)
+        return None
+
     def exec_qmake(self):
-        for mode in self.build_modes:
-            self.__set_libexport_string('qmake', mode)
-            execstr = (self.libexport_str +
-                       self.__get_dir_out_bs_mode('qmake', mode) +
-                       '/tests/test-list')
-            print('execstr = \'' + execstr + '\'')
-            os.system(execstr)
+        self.exec_configurable('qmake')
         return None
 
     def exec_cmake(self):
+        self.exec_configurable('cmake')
         return None
 
     def execute(self):

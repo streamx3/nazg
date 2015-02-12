@@ -15,4 +15,4 @@ add_executable(test-list ${LIST_TEST_HEADERS}
 
 target_link_libraries(test-list nazg)
 
-install(TARGETS test-list DESTINATION ${EXECUTABLE_OUTPUT_PATH})
+install(TARGETS test-list DESTINATION tests)
