@@ -7,9 +7,8 @@ from collections import defaultdict
 
 
 def which(program):
-    import os
-    def is_exe(fpath):
-        return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
+    def is_exe(__fpath):
+        return os.path.isfile(__fpath) and os.access(__fpath, os.X_OK)
 
     fpath, fname = os.path.split(program)
     if fpath:
@@ -61,7 +60,8 @@ class BuildAssistant:
         self.build_rubbish = {'qmake': ['qmake/Makefile',
                                         'qmake/libnazg/Makefile',
                                         'qmake/tests/Makefile',
-                                        'qmake/tests/test-list/Makefile'],
+                                        'qmake/tests/test-list/Makefile',
+                                        '../out/qmake/'],
                               'cmake': ['cmake/CMakeCache.txt',
                                         'cmake/CMakeFiles/',
                                         'cmake/CMakeFiles/',
@@ -82,7 +82,10 @@ class BuildAssistant:
                                         'cmake/tests/test-list/tests/',
                                         'cmake/tests/test-list/cmake/',
                                         'cmake/tests/test-list/' +
-                                        'cmake_install.cmake']}
+                                        'cmake_install.cmake',
+                                        '../out/cmake/'],
+                              'doxygen': ['../doc/html/',
+                                          '../doc/latex/']}
         self.const_make_string = 'make && make install'
         self.const_debug_gdb = 'gdb --silent -x ../debug/test-list.txt '
         self.const_debug_lldb = 'lldb --source ../debug/test-list-lldb.txt '
@@ -112,7 +115,7 @@ class BuildAssistant:
             },
             '31_clean_qmake': {
                 'alias': ['cq', 'clean_qmake'],
-                'func': self.clean_configurable,
+                'func': self.clean_general,
                 'args': 'qmake',
                 'descr': 'Clean qmake build'
             },
@@ -149,7 +152,7 @@ class BuildAssistant:
             },
             '33_clean_cmake': {
                 'alias': ['cc', 'clean_cmake'],
-                'func': self.clean_configurable,
+                'func': self.clean_general,
                 'args': 'cmake',
                 'descr': 'Clean cmake build'
             },
@@ -174,12 +177,14 @@ class BuildAssistant:
             ####################################################################
             '88_doxygen': {
                 'alias': ['dx', 'doxygen', 'doc'],
-                'func': self.doxygen,
+                'func': os.system,
+                'args': 'cd ../doc && doxygen Doxyfile',
                 'descr': 'Generate doxygen documentation'
             },
             '89_doxygen_clean': {
                 'alias': ['dxc', 'doc_clean', 'doxygen_clean'],
-                'func': self.doxygen_clean,
+                'func': self.clean_general,
+                'args': 'doxygen',
                 'descr': 'Clean doxygen documentation'
             },
             ####################################################################
@@ -269,20 +274,14 @@ class BuildAssistant:
             'cd qmake && qmake nazg.pro "CONFIG = ' + config + '" && make')
         return None
 
-    def clean_configurable(self, build_system):
-        if build_system in self.build_systems:
-            for rubbish in self.build_rubbish[build_system]:
+    def clean_general(self, rubbish_list):
+        if rubbish_list in self.build_rubbish:
+            for rubbish in self.build_rubbish[rubbish_list]:
                 rm_smart(rubbish, False)
-            rm_smart(self.__get_dir_out_bs(build_system), False)
-        else:
-            sys.stderr.write('Build system \'' + build_system +
-                             '\' not found!\n')
-            sys.exit(1)
-        return None
 
     def clean_all(self):
         for bs in self.build_systems:
-            self.clean_configurable(bs)
+            self.clean_general(bs)
         rm_smart(self.const_dir_out)
         return None
 
@@ -303,7 +302,7 @@ class BuildAssistant:
                                      '\' not found!\n')
                     sys.exit(1)
             execstr = (self.libexport_str + '' +
-                       debugger_binary + self.debuggers[debugger]['args'] +
+                       debugger_binary + str(self.debuggers[debugger]['args']) +
                        self.__get_dir_out_bs_mode(build_system, 'debug') +
                        '/tests/test-list')
             os.system(execstr)
@@ -328,13 +327,6 @@ class BuildAssistant:
         sys.stderr.write('Wrong option \'' + cmd + '\'!')
         self.fn_help()
         exit(1)
-
-    def doxygen(self):
-        print('doxygen(): I\'m not implemented!')
-        pass
-
-    def doxygen_clean(self):
-        pass
 
     def process_cmd(self, cmd):
         for option in self.options_dict:
