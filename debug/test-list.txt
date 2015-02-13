@@ -1,3 +1,1 @@
-file ../out/bin/test-list
-
-tb test_5
+tb test_nz_list_pop_back

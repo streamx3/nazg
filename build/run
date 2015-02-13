@@ -6,6 +6,25 @@ import sys
 from collections import defaultdict
 
 
+def which(program):
+    import os
+    def is_exe(fpath):
+        return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
+
+    fpath, fname = os.path.split(program)
+    if fpath:
+        if is_exe(program):
+            return program
+    else:
+        for path in os.environ["PATH"].split(os.pathsep):
+            path = path.strip('"')
+            exe_file = os.path.join(path, program)
+            if is_exe(exe_file):
+                return exe_file
+
+    return None
+
+
 def rm_smart(path, warn=True):
     if os.path.exists(path):
         if os.path.isfile(path):
@@ -27,8 +46,16 @@ class BuildAssistant:
     def __init__(self):
         self.libexport_str = ''
         self.current_command = ''
-        self.debuggers = {'gdb': ' --silent -x ../debug/test-list.txt ',
-                          'lldb': ' --source ../debug/test-list-lldb.txt '}
+        self.debuggers = {
+            'gdb': {
+                'args': ' --silent -x ../debug/test-list.txt ',
+                'alias': ['gdb']
+            },
+            'lldb': {
+                'args': ' --source ../debug/test-list-lldb.txt ',
+                'alias': ['lldb', 'lldb-3.3', 'lldb-3.4', 'lldb-3.5']
+            }
+        }
         self.build_modes = ['release', 'debug']
         self.build_systems = ['qmake', 'cmake']
         self.build_rubbish = {'qmake': ['qmake/Makefile',
@@ -75,7 +102,7 @@ class BuildAssistant:
                           'build_qmake', 'build_qmake_debug'],
                 'func': self.build_qmake_configurable,
                 'args': 'debug',
-                'descr': 'Build qmake release'
+                'descr': 'Build qmake debug'
             },
             '02_build_qmake_release': {
                 'alias': ['bqr', 'build_qmake_release'],
@@ -112,7 +139,7 @@ class BuildAssistant:
                 'alias': ['bc', 'bcd', 'build_cmake_debug'],
                 'func': self.build_cmake_configurable,
                 'args': 'debug',
-                'descr': 'Build cmake release'
+                'descr': 'Build cmake debug'
             },
             '04_build_cmake_release': {
                 'alias': ['bcr', 'build_cmake_debug'],
@@ -217,7 +244,7 @@ class BuildAssistant:
                 buf_alias[option] += alias + ' '
             maxlen = len(buf_alias[option]) if len(buf_alias[option]) > maxlen \
                 else maxlen
-        for option in sorted(buf_alias.iterkeys()):
+        for option in sorted(buf_alias.keys()):
             assert isinstance(buf_alias[option], str)
             buf_alias[option] = buf_alias[option].ljust(maxlen, ' ')
             print('  ' + buf_alias[option] + ' -- ' +
@@ -262,15 +289,24 @@ class BuildAssistant:
     def debug_configurable(self, argt):
         build_system = argt[0]
         debugger = argt[1]
+        debugger_binary = debugger
         if (build_system in self.build_systems) and \
                 (debugger in self.debuggers):
             self.__set_libexport_string(build_system, 'debug')
+            if which(debugger) is None:
+                for candidate in self.debuggers[debugger]['alias']:
+                    if which(candidate) is not None:
+                        debugger_binary = candidate
+                        break
+                if debugger is debugger_binary:
+                    sys.stderr.write('Debugger \'' + debugger +
+                                     '\' not found!\n')
+                    sys.exit(1)
             execstr = (self.libexport_str + '' +
-                       debugger + self.debuggers[debugger] +
+                       debugger_binary + self.debuggers[debugger]['args'] +
                        self.__get_dir_out_bs_mode(build_system, 'debug') +
                        '/tests/test-list')
-            print('execstr = ' + execstr)
-            # os.system(execstr)
+            os.system(execstr)
         return None
 
     def debug(self):
@@ -311,7 +347,6 @@ class BuildAssistant:
                     self.options_dict[option]['func']()
                 return None
         self.wrong_option(cmd)
-
     pass
 
     def process_stdin(self):
