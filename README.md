@@ -12,4 +12,4 @@ Build and Deploy
   * ./run c # for clearinig
   * ./run g # for debugging test-list
 
-After ./run b or ./run bd, binaries "out" directory.
+After ./run b or ./run bd, binaries will appear in "out" directory.
