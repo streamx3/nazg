@@ -40,7 +40,7 @@
 #define __NZ_CHKNULLPTR_JMP(ptr,retv,jmp) \
 	do{ \
 		if( ptr == NULL ){ \
-			retv == NZ_ENULLPTR; \
+			retv = NZ_ENULLPTR; \
 			goto jmp; \
 		} \
 	}while(0);
@@ -49,7 +49,7 @@
 #define __NZ_CHKCOND_JMP(cond,retv,jmp) \
 	do{ \
 		if( cond ){ \
-			retv == NZ_ENULLPTR; \
+			retv = NZ_ENULLPTR; \
 			goto jmp; \
 		} \
 	}while(0);

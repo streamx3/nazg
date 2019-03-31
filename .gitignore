@@ -35,4 +35,16 @@ out/*
 *~
 Makefile
 *.cmake
+CMakeFiles
+CMakeTmp
+CMakeCache.txt
+CMakeOutput.log
+*.bin
+3.5.*
+*.make
+*.internal
+*.dir
+CMakeFiles
+install_manifest.txt
+build/cmake/tests/test-list/bin*
 

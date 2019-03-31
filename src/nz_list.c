@@ -152,11 +152,11 @@ void __nz_ptrswap(void **a, void **b)
 
 void __show_list_ptrs(nz_list *list)
 {
-	NZ_LOG("list = %p", list);
-	NZ_LOG("list->begin = %p", list->begin);
-	NZ_LOG("list->rbegin = %p", list->rbegin);
-	NZ_LOG("list->end = %p", list->end);
-	NZ_LOG("list->rend = %p", list->rend);
+    NZ_LOG("list = %p", (void*)list);
+    NZ_LOG("list->begin = %p", (void*)list->begin);
+    NZ_LOG("list->rbegin = %p", (void*)list->rbegin);
+    NZ_LOG("list->end = %p", (void*)list->end);
+    NZ_LOG("list->rend = %p", (void*)list->rend);
 }
 
 /******************************************************************************/
