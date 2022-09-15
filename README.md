@@ -1,15 +1,17 @@
 nazg
 ====
 
-functionality I miss in C and Linux
+Container and utility library.
+Currently implemented:
+- list
 
-Build and Deploy
-=================
+How to build:
+-------------
 
-*  cd build
-  * ./run b # for regular build
-  * ./run bd # for regular build
-  * ./run c # for clearinig
-  * ./run g # for debugging test-list
-
-After ./run b or ./run bd, binaries will appear in "out" directory.
+Usual CMake way:
+```
+mkdir build
+cd build
+cmake ..
+make -j
+```
