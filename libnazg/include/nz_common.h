@@ -107,7 +107,7 @@ do{ \
 
 #define NZ_LOG(fmt, ...) \
 do{\
-    nz_print(NZ_LVL_NOTICE"[" GREEN "NZ L" RESET "][%s][%d][%s]" fmt "\n", \
+    nz_print(NZ_LVL_NOTICE"[" GREEN "NZ L" RESET "] %s:%d %s(..) : " fmt "\n", \
     __FILE__, __LINE__, __FUNCTION__, ##__VA_ARGS__ ); \
 }while(0)
 

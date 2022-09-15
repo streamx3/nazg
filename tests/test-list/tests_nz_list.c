@@ -324,6 +324,7 @@ s32 test_nz_list_resize(nz_list *list) {
 #define sz6_2 1
 #define sz6_3 4
 
+#undef TSTNM
 #define TSTNM __FUNCTION__
 
     s32 errh;
@@ -353,7 +354,7 @@ s32 test_nz_list_resize(nz_list *list) {
     errh = nz_list_resize(list, (u32)sz6_3, NULL);
     NZ_ASRT_DUMB("[%s]: resizing list to biger", TSTNM);
 
-    NZ_LOG("[%s]: Verification of increased list", TSTNM);
+    NZ_LOG("Verification of increased list");
     NZ_ASRTCND(list->size == sz6_3);
     NZ_ASRTCND(list->begin->data == &(d1[0]));
     NZ_ASRTCND(list->begin->next->data == NULL);

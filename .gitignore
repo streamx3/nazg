@@ -47,4 +47,5 @@ CMakeOutput.log
 CMakeFiles
 install_manifest.txt
 build/cmake/tests/test-list/bin*
+cmake-build-debug
 
